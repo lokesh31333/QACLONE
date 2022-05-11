@@ -15,6 +15,7 @@ import {useEffect, useState} from "react";
 import localStorage from "../utils/localStorage";
 import {useStateContext} from "../context/state";
 import DetailedChat from './DetailedChat';
+import NewChat from './NewChat';
 
 const Chats = () => {
   const classes = useMessageStyles();
@@ -24,7 +25,9 @@ const Chats = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [conversation, setConversation] = useState(null);
   const [message, setMessage] = useState(null);
+  const [search, setSearch] = useState(null);
   const [users, setUsers] = useState();
+  const [allusers, setAllUsers] = useState();
   const loggedUser = localStorage.loadUser();
 
   const fetchAllTags = async () => {
@@ -54,8 +57,22 @@ const Chats = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Current user!!", currentUser);
-  }, [currentUser])
+    console.log("Current user!!", currentUser, users);
+  }, [currentUser, users])
+
+  useEffect(() => {
+    const changeUserChat = async () => {
+      const _allUsers = await axios.get(`${BASE_URL}/users/all`,  {
+        headers: {
+          authorization: loggedUser?.token
+        }
+      });
+      console.log("All users====", _allUsers)
+      setAllUsers(_allUsers.data)
+    }
+
+    changeUserChat().then((res) => console.log("res", res))
+  }, [])
 
   const changeUserChat = async (user) => {
     console.log("Item cjlicked", user)
@@ -85,11 +102,30 @@ const Chats = () => {
     // setConversation(getConvo.data);
   }
 
+  const searchNewUsers = () => {
+    // TODO: change to filter
+    const filteredUsrs = []
+    for(let i in allusers) {
+      if(allusers[i].username.includes(search)) {
+        filteredUsrs.push(allusers[i])
+      }
+    }
+    console.log("Filtered", filteredUsrs)
+    setUsers(old => [...old, ...filteredUsrs])
+  }
+
   return (
     <div className={classes.root}>
       <Typography variant="h6" color="secondary">
         Messages
       </Typography>
+
+      <div>
+        <input onChange={(e) => setSearch(e.target.value)} type='text' placeholder='New Convo'/>
+        <Button onClick={searchNewUsers}>Add New Chat</Button>
+      </div>
+
+
       <div style={{float: "left"}}>
         {isLoading ? "Loading..." : users.map((item, idx) => (
           <div style={{display: "flex", padding: "10px"}} key={idx}>
