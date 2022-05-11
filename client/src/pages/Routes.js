@@ -1,62 +1,68 @@
-import {Switch, Route, Redirect} from 'react-router-dom';
-import NavMenuDesktop from '../components/NavMenuDesktop';
-import RightSidePanel from '../components/RightSidePanel';
-import QuesListPage from './QuesListPage';
-import AllTagsPage from './AllTagsPage';
-import AllUsersPage from './AllUsersPage';
-import QuestionPage from './QuestionPage';
-import AskQuestionPage from './AskQuestionPage';
-import UserPage from './UserPage';
-import NotFoundPage from './NotFoundPage';
-import {useAuthContext} from '../context/auth';
+import { Switch, Route, Redirect } from "react-router-dom";
+import NavMenuDesktop from "../components/NavMenuDesktop";
+import RightSidePanel from "../components/RightSidePanel";
+import QuesListPage from "./QuesListPage";
+import AllTagsPage from "./AllTagsPage";
+import AllUsersPage from "./AllUsersPage";
+import QuestionPage from "./QuestionPage";
+import AskQuestionPage from "./AskQuestionPage";
+import UserPage from "./UserPage";
+import NotFoundPage from "./NotFoundPage";
+import { useAuthContext } from "../context/auth";
 
+import { Container, Grid } from "@material-ui/core";
+import PendingQuestionsPage from "./PendingQuestionsPage";
 import {Container, Grid} from '@material-ui/core';
 import Chats from '../components/Chats';
 import DetailedChat from '../components/DetailedChat';
 
 const Routes = () => {
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
 
   return (
     <Container disableGutters>
       <Grid container direction="row" wrap="nowrap" justify="space-between">
         <Switch>
           <Route exact path="/">
-            <NavMenuDesktop/>
-            <QuesListPage/>
-            <RightSidePanel/>
+            <NavMenuDesktop />
+            <QuesListPage />
+            <RightSidePanel />
           </Route>
           <Route exact path="/ask">
             {user ? (
               <>
-                <NavMenuDesktop/>
-                <AskQuestionPage/>
-                <RightSidePanel/>
+                <NavMenuDesktop />
+                <AskQuestionPage />
+                <RightSidePanel />
               </>
             ) : (
-              <Redirect to="/"/>
+              <Redirect to="/" />
             )}
           </Route>
           <Route exact path="/tags">
-            <NavMenuDesktop/>
-            <AllTagsPage/>
+            <NavMenuDesktop />
+            <AllTagsPage />
           </Route>
           <Route exact path="/users">
-            <NavMenuDesktop/>
-            <AllUsersPage/>
+            <NavMenuDesktop />
+            <AllUsersPage />
           </Route>
           <Route exact path="/user/:username">
-            <NavMenuDesktop/>
-            <UserPage/>
+            <NavMenuDesktop />
+            <UserPage />
           </Route>
           <Route exact path="/questions/:quesId">
-            <NavMenuDesktop/>
-            <QuestionPage/>
+            <NavMenuDesktop />
+            <QuestionPage />
+          </Route>
+          <Route exact path="/approve">
+            <NavMenuDesktop />
+            <PendingQuestionsPage />
           </Route>
           <Route exact path="/tags/:tagName">
-            <NavMenuDesktop/>
-            <QuesListPage tagFilterActive={true}/>
-            <RightSidePanel/>
+            <NavMenuDesktop />
+            <QuesListPage tagFilterActive={true} />
+            <RightSidePanel />
           </Route>
           <Route exact path="/search/:query">
             <NavMenuDesktop/>
@@ -67,9 +73,9 @@ const Routes = () => {
             <Chats/>
           </Route>
           <Route>
-            <NavMenuDesktop/>
-            <NotFoundPage/>
-            <RightSidePanel/>
+            <NavMenuDesktop />
+            <NotFoundPage />
+            <RightSidePanel />
           </Route>
         </Switch>
       </Grid>

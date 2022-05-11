@@ -19,6 +19,7 @@ import {
 } from "@material-ui/core";
 import { useAuthFormStyles } from "../styles/muiStyles";
 import PersonIcon from "@material-ui/icons/Person";
+import EmailOutlined from "@material-ui/icons/EmailOutlined";
 import LockIcon from "@material-ui/icons/Lock";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
@@ -26,7 +27,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import { of } from "zen-observable";
 
 const validationSchema = yup.object({
-  username: yup.string().required("Required"),
+  email: yup.string().required("Required"),
   password: yup.string().required("Required"),
 });
 
@@ -42,12 +43,12 @@ const LoginForm = ({ setAuthType, closeModal }) => {
     resolver: yupResolver(validationSchema),
   });
 
-  const loginUser = async (username, password) => {
+  const loginUser = async (password, email) => {
     try {
       setIsLoading(true);
       const loginUsingCredentials = await axios.post(`${BASE_URL}/login`, {
-        username,
         password,
+        email,
       });
       console.log(loginUsingCredentials);
       setIsLoading(false);
@@ -66,8 +67,8 @@ const LoginForm = ({ setAuthType, closeModal }) => {
     }
   };
 
-  const onLogin = ({ username, password }) => {
-    loginUser(username, password);
+  const onLogin = ({ password, email }) => {
+    loginUser(password, email);
   };
 
   return (
@@ -78,17 +79,17 @@ const LoginForm = ({ setAuthType, closeModal }) => {
           <TextField
             fullWidth
             inputRef={register}
-            name="username"
-            type="text"
-            label="Username"
+            name="email"
+            type="email"
+            label="Email"
             variant="outlined"
             size="small"
-            error={"username" in errors}
-            helperText={"username" in errors ? errors.username.message : ""}
+            error={"email" in errors}
+            helperText={"email" in errors ? errors.username.message : ""}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <PersonIcon color="primary" />
+                  <EmailOutlined color="primary" />
                 </InputAdornment>
               ),
             }}

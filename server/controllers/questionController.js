@@ -7,33 +7,42 @@ const {
   upvoteIt,
   quesRep,
 } = require("../utils/helperFuncs");
+const {
+  addQuestionToCache,
+  updateQuestionVotePoints,
+  updateQuestionViews,
+  removeQuestionFromCache,
+  updateQuestionFromCache,
+} = require("./redisController");
+const ReputationScore = require("../models/reputationScore");
 
 const getQuestions = async (req, res) => {
   const { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
 
   let sortQuery;
   switch (sortBy) {
-    case "votes":
+    case "VOTES":
       sortQuery = { points: -1 };
       break;
-    case "views":
+    case "VIEWS":
       sortQuery = { views: -1 };
       break;
-    case "newest":
+    case "NEWEST":
       sortQuery = { createdAt: -1 };
       break;
-    case "oldest":
+    case "OLDEST":
       sortQuery = { createdAt: 1 };
       break;
     default:
       sortQuery = { hotAlgo: -1 };
   }
 
-  let findQuery = {};
+  let findQuery = { pendingApproval: false };
   if (filterByTag) {
-    findQuery = { tags: { $all: [filterByTag] } };
+    findQuery = { ...findQuery, tags: { $all: [filterByTag] } };
   } else if (filterBySearch) {
     findQuery = {
+      ...findQuery,
       $or: [
         {
           title: {
@@ -75,18 +84,68 @@ const getQuestions = async (req, res) => {
     res.status(500).json(err.message);
   }
 };
+const getPendingQuestions = async (req, res) => {
+  const { page, limit } = req.query;
+  let findQuery = { pendingApproval: true };
+
+  try {
+    const quesCount = await Question.find(findQuery).countDocuments();
+    const paginated = paginateResults(
+      parseInt(page),
+      parseInt(limit),
+      quesCount
+    );
+    const questions = await Question.find(findQuery)
+      .sort({ _id: -1 })
+      .limit(parseInt(limit))
+      .skip(paginated.startIndex)
+      .populate("author", "username");
+
+    const paginatedQues = {
+      previous: paginated.results.previous,
+      questions,
+      next: paginated.results.next,
+    };
+
+    return res.status(200).json(paginatedQues);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+};
+
+const approveQuestion = async (req, res) => {
+  const { quesId } = req.body;
+  console.log(quesId);
+  const updatedQues = await Question.findByIdAndUpdate(
+    quesId,
+    { pendingApproval: false },
+    { new: true }
+  )
+    .populate("author", "username")
+    .populate("comments.author", "username")
+    .populate("answers.author", "username")
+    .populate("answers.comments.author", "username");
+  console.log(updatedQues);
+  await addQuestionToCache(updatedQues);
+  return res.status(200).json({ message: "Question Approved" });
+};
 
 const viewQuestion = async (req, res) => {
   const { quesId } = req.query;
 
   try {
-    const question = await Question.findById(quesId);
+    const question = await Question.findById({
+      _id: quesId,
+    });
     if (!question) {
-      throw new Error(`Question with ID: ${quesId} does not exist in DB.`);
+      throw new Error(
+        `Question with ID: ${quesId} does not exist or pending approval.`
+      );
     }
 
     question.views++;
     const savedQues = await question.save();
+    await updateQuestionViews(question, question.views);
     const populatedQues = await savedQues
       .populate("author", "username")
       .populate("comments.author", "username")
@@ -96,7 +155,7 @@ const viewQuestion = async (req, res) => {
 
     return res.status(200).json(populatedQues);
   } catch (err) {
-    res.status(500).json(err.message);
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -135,7 +194,7 @@ const editQuestion = async (req, res) => {
       .populate("comments.author", "username")
       .populate("answers.author", "username")
       .populate("answers.comments.author", "username");
-
+    await updateQuestionFromCache(updatedQues);
     return res.status(200).json(updatedQues);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -146,6 +205,7 @@ const postQuestion = async (req, res) => {
   try {
     const loggedUser = req.user;
     const { title, body, tags } = req.body;
+    const isPendingApproval = req.isPendingApproval;
 
     const { errors, valid } = questionValidator(title, body, tags);
     if (!valid) {
@@ -157,6 +217,7 @@ const postQuestion = async (req, res) => {
       body,
       tags,
       author: author._id,
+      pendingApproval: isPendingApproval,
     });
     const savedQues = await newQuestion.save();
     const populatedQues = await savedQues
@@ -165,7 +226,10 @@ const postQuestion = async (req, res) => {
 
     author.questions.push({ quesId: savedQues._id });
     await author.save();
-
+    if (!isPendingApproval) {
+      const addedToCache = await addQuestionToCache(populatedQues);
+      console.log("addedToCache: ", addedToCache);
+    }
     return res.status(200).json(populatedQues);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -191,6 +255,7 @@ const deleteQuestion = async (req, res) => {
     }
 
     await Question.findByIdAndDelete(quesId);
+    await removeQuestionFromCache(quesId);
     return res.status(200).json({ deletedId: question._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -211,14 +276,25 @@ const voteQuestion = async (req, res) => {
     if (question.author.toString() === user._id.toString()) {
       throw new Error("You can't vote for your own post.");
     }
-
+    let reputationObject = { author: question.author, questionId: quesId };
     let votedQues;
     if (voteType.toLowerCase() === "upvote") {
       votedQues = upvoteIt(question, user);
+      reputationObject = {
+        ...reputationObject,
+        reputationScoreType: "UPVOTE_QUESTION",
+        score: 10,
+      };
     } else {
+      reputationObject = {
+        ...reputationObject,
+        reputationScoreType: "DOWNVOTE_QUESTION",
+        score: -10,
+      };
       votedQues = downvoteIt(question, user);
     }
-
+    const reputationScore = new ReputationScore(reputationObject);
+    await reputationScore.save();
     votedQues.hotAlgo =
       Math.log(Math.max(Math.abs(votedQues.points), 1)) +
       Math.log(Math.max(votedQues.views * 2, 1)) +
@@ -228,7 +304,8 @@ const voteQuestion = async (req, res) => {
     const author = await User.findById(question.author);
     const addedRepAuthor = quesRep(question, author);
     await addedRepAuthor.save();
-
+    console.log("new points", savedQues.points);
+    await updateQuestionVotePoints(savedQues._id, savedQues.points);
     const saved = await savedQues
       .populate("author", "username")
       .populate("comments.author", "username")
@@ -240,6 +317,24 @@ const voteQuestion = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const checkIfNeedAdminApproval = async (req, res, next) => {
+  const { tags } = req.body;
+  const tagsFromQues = await Question.find({}).select("tags");
+  const tagsArray = tagsFromQues.map((t) => t.tags).flat();
+  const currentQuestionTags = {};
+  let needApproval = false;
+  tagsArray.forEach((tag) => (currentQuestionTags[tag] = 1));
+  tags.forEach((tag) => {
+    if (!currentQuestionTags[tag]) {
+      console.log("New tag detected!");
+      needApproval = true;
+    }
+  });
+  req.isPendingApproval = needApproval;
+  return next();
+};
+
 module.exports = {
   getQuestions,
   viewQuestion,
@@ -247,4 +342,7 @@ module.exports = {
   postQuestion,
   deleteQuestion,
   voteQuestion,
+  checkIfNeedAdminApproval,
+  getPendingQuestions,
+  approveQuestion,
 };

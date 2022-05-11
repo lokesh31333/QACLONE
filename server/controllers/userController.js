@@ -1,4 +1,5 @@
 const Question = require("../models/question");
+const ReputationScore = require("../models/reputationScore");
 const User = require("../models/user");
 
 const getUser = async (req, res) => {
@@ -29,6 +30,36 @@ const getUser = async (req, res) => {
       .select("id title points createdAt")
       .limit(5);
 
+    const totalQuestions = recentQuestions.length;
+    const totalAnswers = recentAnswers.length;
+
+    const getReputationScore = await ReputationScore.aggregate([
+      {
+        $match: {
+          author: user._id,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalScore: {
+            $sum: "$score",
+          },
+        },
+      },
+    ]);
+    const userReputationScore =
+      getReputationScore && getReputationScore.length > 0
+        ? getReputationScore[0].totalScore
+        : 0;
+    let badge = "No Badge";
+    if (userReputationScore > 20) {
+      badge = "Gold";
+    } else if (userReputationScore <= 14 && userReputationScore > 10) {
+      badge = "Silver";
+    } else if (userReputationScore > 0) {
+      badge = "Bronze";
+    }
     return res.status(200).json({
       id: user._id,
       username: user.username,
@@ -38,6 +69,11 @@ const getUser = async (req, res) => {
       createdAt: user.createdAt,
       recentQuestions,
       recentAnswers,
+      reputation: userReputationScore,
+      totalQuestions,
+      totalAnswers,
+      userReputationScore,
+      badge,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

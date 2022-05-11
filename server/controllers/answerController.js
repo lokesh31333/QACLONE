@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const Question = require("../models/question");
 const { upvoteIt, downvoteIt, ansRep } = require("../utils/helperFuncs");
+const ReputationScore = require("../models/reputationScore");
 
 const postAnswer = async (req, res) => {
   const loggedUser = req.user;
@@ -140,11 +141,28 @@ const voteAnswer = async (req, res) => {
     }
 
     let votedAns;
+    let reputationObject = {
+      author: targetAnswer.author,
+      questionId: quesId,
+      answerId: ansId,
+    };
     if (voteType.toLowerCase() === "upvote") {
       votedAns = upvoteIt(targetAnswer, user);
+      reputationObject = {
+        ...reputationObject,
+        reputationScoreType: "UPVOTE_ANSWER",
+        score: 5,
+      };
     } else {
       votedAns = downvoteIt(targetAnswer, user);
+      reputationObject = {
+        ...reputationObject,
+        reputationScoreType: "UPVOTE_ANSWER",
+        score: -5,
+      };
     }
+    const reputationScore = new ReputationScore(reputationObject);
+    await reputationScore.save();
 
     question.answers = question.answers.map((a) =>
       a._id.toString() !== ansId ? a : votedAns
@@ -188,13 +206,49 @@ const acceptAnswer = async (req, res) => {
     if (question.author.toString() !== loggedUser.id.toString()) {
       throw new Error("Only the author of question can accept answers.");
     }
-
-    if (
-      !question.acceptedAnswer ||
+    console.log(targetAnswer);
+    if (!question.acceptedAnswer) {
+      const reputationScore = new ReputationScore({
+        author: targetAnswer.author,
+        reputationScoreType: "ACCEPTED_ANSWER",
+        questionId: quesId,
+        answerId: ansId,
+        score: 15,
+      });
+      question.acceptedAnswer = targetAnswer._id;
+      await reputationScore.save();
+    } else if (
+      question.acceptedAnswer &&
       !question.acceptedAnswer.equals(targetAnswer._id)
     ) {
+      const reputationScoreForNewAccpetedAnswer = new ReputationScore({
+        author: targetAnswer.author,
+        reputationScoreType: "ACCEPTED_ANSWER",
+        questionId: quesId,
+        answerId: ansId,
+        score: 15,
+      });
+      const reputationScoreForOldAcceptedAnswer = new ReputationScore({
+        author: question.acceptedAnswer.author,
+        reputationScoreType: "REMOVED_ACCEPTED_ANSWER",
+        questionId: quesId,
+        answerId: ansId,
+        score: -15,
+      });
       question.acceptedAnswer = targetAnswer._id;
+      await Promise.all([
+        reputationScoreForNewAccpetedAnswer.save(),
+        reputationScoreForOldAcceptedAnswer.save(),
+      ]);
     } else {
+      const reputationScoreForRemovedAcceptedAnswer = new ReputationScore({
+        author: targetAnswer.author,
+        reputationScoreType: "REMOVED_ACCEPTED_ANSWER",
+        questionId: quesId,
+        answerId: ansId,
+        score: -15,
+      });
+      await reputationScoreForRemovedAcceptedAnswer.save();
       question.acceptedAnswer = null;
     }
 

@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
-const commentSchema = require('./comment').schema;
-const answerSchema = require('./answer').schema;
-const schemaCleaner = require('../utils/schemaCleaner');
+const mongoose = require("mongoose");
+const commentSchema = require("./comment").schema;
+const answerSchema = require("./answer").schema;
+const schemaCleaner = require("../utils/schemaCleaner");
 
 const questionSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   title: {
@@ -31,20 +31,20 @@ const questionSchema = new mongoose.Schema({
   upvotedBy: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   downvotedBy: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   views: { type: Number, default: 0 },
   hotAlgo: { type: Number, default: Date.now },
   acceptedAnswer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Answer',
+    ref: "Answer",
   },
   createdAt: {
     type: Date,
@@ -54,8 +54,12 @@ const questionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  pendingApproval: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 schemaCleaner(questionSchema);
 
-module.exports = mongoose.model('Question', questionSchema);
+module.exports = mongoose.model("Question", questionSchema);
