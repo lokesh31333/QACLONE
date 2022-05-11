@@ -23,6 +23,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import EnhancedEncryptionIcon from "@material-ui/icons/EnhancedEncryption";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import EmailOutlined from "@material-ui/icons/EmailOutlined";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
 const validationSchema = yup.object({
@@ -35,6 +36,7 @@ const validationSchema = yup.object({
       /^[a-zA-Z0-9-_]*$/,
       "Only alphanum, dash & underscore characters are allowed"
     ),
+  email: yup.string().required("Required").email("Please enter a valid email"),
   password: yup
     .string()
     .required("Required")
@@ -64,12 +66,13 @@ const RegisterForm = ({ setAuthType, closeModal }) => {
   //   },
   // });
 
-  const registerUser = async (username, password) => {
+  const registerUser = async (username, password, email) => {
     try {
       setIsLoading(true);
       const loginUsingCredentials = await axios.post(`${BASE_URL}/register`, {
         username,
         password,
+        email,
       });
       setIsLoading(false);
       setUser(loginUsingCredentials.data);
@@ -87,11 +90,11 @@ const RegisterForm = ({ setAuthType, closeModal }) => {
     }
   };
 
-  const onRegister = ({ username, password, confirmPassword }) => {
+  const onRegister = ({ username, email, password, confirmPassword }) => {
     if (password !== confirmPassword)
       return setErrorMsg("Both passwords need to match.");
 
-    registerUser(username, password);
+    registerUser(username, password, email);
   };
 
   return (
@@ -114,6 +117,27 @@ const RegisterForm = ({ setAuthType, closeModal }) => {
               startAdornment: (
                 <InputAdornment position="start">
                   <PersonIcon color="primary" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
+        <div className={classes.inputField}>
+          <TextField
+            required
+            fullWidth
+            inputRef={register}
+            name="email"
+            type="email"
+            label="Email"
+            variant="outlined"
+            size="small"
+            error={"email" in errors}
+            helperText={"email" in errors ? errors.email.message : ""}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <EmailOutlined color="primary" />
                 </InputAdornment>
               ),
             }}

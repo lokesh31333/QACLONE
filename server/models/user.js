@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
-const schemaCleaner = require('../utils/schemaCleaner');
+const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
+const schemaCleaner = require("../utils/schemaCleaner");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -11,20 +11,25 @@ const userSchema = new mongoose.Schema({
     trim: true,
     unique: true,
   },
+  reputationScore: {
+    type: Number,
+    default: 0,
+  },
   passwordHash: {
     type: String,
     required: true,
   },
-  role: { type: String, default: 'user' },
+  role: { type: String, default: "user" },
+  email: { type: String },
   questions: [
     {
-      quesId: { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
+      quesId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
       rep: { type: Number, default: 0 },
     },
   ],
   answers: [
     {
-      ansId: { type: mongoose.Schema.Types.ObjectId, ref: 'Answer' },
+      ansId: { type: mongoose.Schema.Types.ObjectId, ref: "Answer" },
       rep: { type: Number, default: 0 },
     },
   ],
@@ -37,4 +42,4 @@ const userSchema = new mongoose.Schema({
 userSchema.plugin(uniqueValidator);
 schemaCleaner(userSchema);
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
