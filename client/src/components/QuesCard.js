@@ -1,13 +1,14 @@
-import { Link as RouterLink } from 'react-router-dom';
-import PostedByUser from './PostedByUser';
+import { Link as RouterLink } from "react-router-dom";
+import PostedByUser from "./PostedByUser";
 
-import { Paper, Typography, Chip } from '@material-ui/core';
-import { useQuesCardStyles } from '../styles/muiStyles';
+import { Paper, Typography, Chip } from "@material-ui/core";
+import { useQuesCardStyles } from "../styles/muiStyles";
 
 const QuesCard = ({ question }) => {
   const classes = useQuesCardStyles();
 
   const {
+    _id,
     id,
     title,
     author,
@@ -44,12 +45,12 @@ const QuesCard = ({ question }) => {
           color="secondary"
           className={classes.title}
           component={RouterLink}
-          to={`/questions/${id}`}
+          to={`/questions/${_id || id}`}
         >
           {title}
         </Typography>
-        <Typography variant="body2" style={{ wordWrap: 'anywhere' }}>
-          {body.length > 150 ? body.slice(0, 150) + '...' : body}
+        <Typography variant="body2" style={{ wordWrap: "anywhere" }}>
+          {body.length > 150 ? body.slice(0, 150) + "..." : body}
         </Typography>
         <div className={classes.bottomWrapper}>
           <div className={classes.tagsWrapper}>

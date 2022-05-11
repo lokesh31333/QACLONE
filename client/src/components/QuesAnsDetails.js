@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { UpvoteButton, DownvoteButton } from './VoteButtons';
-import { useAuthContext } from '../context/auth';
-import PostedByUser from './PostedByUser';
-import CommentSection from './CommentSection';
-import AcceptAnswerButton from './AcceptAnswerButton';
-import DeleteDialog from './DeleteDialog';
-import AuthFormModal from './AuthFormModal';
-import { ReactComponent as AcceptedIcon } from '../svg/accepted.svg';
+import { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { UpvoteButton, DownvoteButton } from "./VoteButtons";
+import { useAuthContext } from "../context/auth";
+import PostedByUser from "./PostedByUser";
+import CommentSection from "./CommentSection";
+import AcceptAnswerButton from "./AcceptAnswerButton";
+import DeleteDialog from "./DeleteDialog";
+import AuthFormModal from "./AuthFormModal";
+import { ReactComponent as AcceptedIcon } from "../svg/accepted.svg";
 
 import {
   Typography,
@@ -15,8 +15,9 @@ import {
   Button,
   SvgIcon,
   TextField,
-} from '@material-ui/core';
-import { useQuesPageStyles } from '../styles/muiStyles';
+} from "@material-ui/core";
+import { useQuesPageStyles } from "../styles/muiStyles";
+import RichTextEditorComponent from "./RichTextEditorComponent";
 
 const QuesAnsDetails = ({
   quesAns,
@@ -111,9 +112,7 @@ const QuesAnsDetails = ({
       </div>
       <div className={classes.quesBody}>
         {!editAnsOpen ? (
-          <Typography variant="body1" style={{ wordWrap: 'anywhere' }}>
-            {body}
-          </Typography>
+          <RichTextEditorComponent content={body} isReadOnly={true} />
         ) : (
           <form className={classes.smallForm} onSubmit={handleAnswerEdit}>
             <TextField
@@ -181,9 +180,9 @@ const QuesAnsDetails = ({
                   Edit
                 </Button>
               )}
-              {user && (user.id === author.id || user.role === 'ADMIN') && (
+              {user && (user.id === author.id || user.role === "ADMIN") && (
                 <DeleteDialog
-                  bodyType={isAnswer ? 'answer' : 'question'}
+                  bodyType={isAnswer ? "answer" : "question"}
                   handleDelete={deleteQuesAns}
                 />
               )}

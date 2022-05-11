@@ -1,16 +1,17 @@
-import { Switch, Route, Redirect } from 'react-router-dom';
-import NavMenuDesktop from '../components/NavMenuDesktop';
-import RightSidePanel from '../components/RightSidePanel';
-import QuesListPage from './QuesListPage';
-import AllTagsPage from './AllTagsPage';
-import AllUsersPage from './AllUsersPage';
-import QuestionPage from './QuestionPage';
-import AskQuestionPage from './AskQuestionPage';
-import UserPage from './UserPage';
-import NotFoundPage from './NotFoundPage';
-import { useAuthContext } from '../context/auth';
+import { Switch, Route, Redirect } from "react-router-dom";
+import NavMenuDesktop from "../components/NavMenuDesktop";
+import RightSidePanel from "../components/RightSidePanel";
+import QuesListPage from "./QuesListPage";
+import AllTagsPage from "./AllTagsPage";
+import AllUsersPage from "./AllUsersPage";
+import QuestionPage from "./QuestionPage";
+import AskQuestionPage from "./AskQuestionPage";
+import UserPage from "./UserPage";
+import NotFoundPage from "./NotFoundPage";
+import { useAuthContext } from "../context/auth";
 
-import { Container, Grid } from '@material-ui/core';
+import { Container, Grid } from "@material-ui/core";
+import PendingQuestionsPage from "./PendingQuestionsPage";
 
 const Routes = () => {
   const { user } = useAuthContext();
@@ -50,6 +51,10 @@ const Routes = () => {
           <Route exact path="/questions/:quesId">
             <NavMenuDesktop />
             <QuestionPage />
+          </Route>
+          <Route exact path="/approve">
+            <NavMenuDesktop />
+            <PendingQuestionsPage />
           </Route>
           <Route exact path="/tags/:tagName">
             <NavMenuDesktop />

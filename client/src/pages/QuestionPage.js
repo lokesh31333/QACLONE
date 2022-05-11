@@ -29,27 +29,13 @@ const QuestionPage = () => {
   const classes = useQuesPageStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  // const [fetchQuestion, { data, loading }] = useLazyQuery(VIEW_QUESTION, {
-  //   onError: (err) => {
-  //     notify(getErrorMsg(err), 'error');
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   fetchQuestion({ variables: { quesId } });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [quesId]);
 
   useEffect(() => {
     const fetchAllTags = async () => {
       try {
         setIsLoading(true);
-        const loggedUser = localStorage.loadUser();
         const getQuestion = await axios.get(`${BASE_URL}/questions/get`, {
           params: { quesId },
-          headers: {
-            authorization: loggedUser.token,
-          },
         });
         const { data } = getQuestion;
         setIsLoading(false);

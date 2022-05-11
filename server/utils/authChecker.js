@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 const { SECRET } = require("./config");
 
 const authChecker = (req, res, next) => {
@@ -16,4 +17,14 @@ const authChecker = (req, res, next) => {
   }
 };
 
-module.exports = authChecker;
+const adminChecker = async (req, res, next) => {
+  const { id } = req.user;
+  const user = await User.findById(id);
+  if (user.role === "admin") {
+    return next();
+  }
+  console.log(user.role);
+  return res.status(401).json({ message: "Unauthorized! Need admin access" });
+};
+
+module.exports = { authChecker, adminChecker };

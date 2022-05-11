@@ -3,10 +3,12 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { registerValidator } = require("../utils/validators");
 const { SECRET } = require("../utils/config");
+const { db } = require("../models/index");
 
 const registerController = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const UserSql = db.users;
+    const { username, email, password } = req.body;
     const { errors, valid } = registerValidator(username, password);
 
     if (!valid) {
@@ -24,8 +26,15 @@ const registerController = async (req, res) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
+    const createdUser = await UserSql.create({
+      username: username,
+      email,
+      user_password: passwordHash,
+    });
+    console.log(createdUser);
     const user = new User({
       username,
+      email,
       passwordHash,
     });
 
@@ -44,6 +53,7 @@ const registerController = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

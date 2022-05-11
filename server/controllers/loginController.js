@@ -3,25 +3,33 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { loginValidator } = require("../utils/validators");
 const { SECRET } = require("../utils/config");
+const { db } = require("../models/index");
 
 const loginController = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const { errors, valid } = loginValidator(username, password);
+    const UserSql = db.users;
+    const { email, password } = req.body;
+    const { errors, valid } = loginValidator(email, password);
 
     if (!valid) {
       throw new Error(Object.values(errors)[0], { errors });
     }
 
     const user = await User.findOne({
-      username: { $regex: new RegExp("^" + username + "$", "i") },
+      email,
     });
-
+    console.log(user);
     if (!user) {
-      throw new Error(`User: '${username}' not found.`);
+      throw new Error(`User: '${email}' not found.`);
     }
 
-    const credentialsValid = await bcrypt.compare(password, user.passwordHash);
+    const userRequestingLogin = await UserSql.findOne({
+      where: { email },
+    });
+    const credentialsValid = await bcrypt.compare(
+      password,
+      userRequestingLogin.user_password
+    );
 
     if (!credentialsValid) {
       throw new Error("Invalid credentials.");
