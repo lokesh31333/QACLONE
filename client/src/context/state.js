@@ -4,7 +4,7 @@ import storage from '../utils/localStorage';
 const StateContext = createContext({
   editValues: null,
   notification: null,
-  darkMode: false,
+
   setEditValues: (values) => {},
   clearEdit: () => {},
   notify: (message, severity, duration) => {},

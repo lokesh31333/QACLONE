@@ -11,6 +11,7 @@ const { questionCommentRouter } = require("./routes/questionCommentRoutes");
 const { answerRouter } = require("./routes/answerRoutes");
 const { answerCommentRouter } = require("./routes/answerCommentRoutes");
 const { tagsRouter } = require("./routes/tagsRoutes");
+const {messagesRouter} = require('./routes/messageRoutes');
 
 const app = express();
 const API_PREFIX = "/api/v1";
@@ -23,6 +24,7 @@ app.use(`${API_PREFIX}/login`, loginRouter);
 app.use(`${API_PREFIX}/questions`, questionRouter);
 app.use(`${API_PREFIX}/answers`, authChecker, answerRouter);
 app.use(`${API_PREFIX}/users`, userRouter);
+app.use(`${API_PREFIX}/messages`, authChecker, messagesRouter);
 app.use(`${API_PREFIX}/question-comments`, authChecker, questionCommentRouter);
 app.use(`${API_PREFIX}/answer-comments`, authChecker, answerCommentRouter);
 app.use(`${API_PREFIX}/tags`, tagsRouter);

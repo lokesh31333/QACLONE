@@ -187,6 +187,35 @@ export const useRightSidePanelStyles = makeStyles(
   { index: 1 }
 );
 
+export const useRightChatPanel = makeStyles(
+  (theme) => ({
+    rootPanel: {
+      position: "sticky",
+      display: "flex",
+      minHeight: "10vh",
+      top: "5.5vH",
+    },
+    content: {
+      paddingTop: 0,
+      marginTop: "1em",
+    },
+    tagsColumn: {
+      border: `1px solid ${theme.palette.primary.main}50`,
+      borderRadius: 4,
+      padding: "0.8em",
+      backgroundColor: `${theme.palette.primary.main}08`,
+    },
+    tagsWrapper: {
+      marginTop: "1em",
+      display: "grid",
+      width: "100%",
+      gridTemplateColumns: "repeat(2, minmax(130px, 1fr))",
+      gridGap: "8px",
+    },
+  }),
+  { index: 1 }
+);
+
 export const useQuesCardStyles = makeStyles(
   (theme) => ({
     root: {
@@ -641,6 +670,36 @@ export const useAskQuesPageStyles = makeStyles(
   }),
   { index: 1 }
 );
+
+
+export const useMessageStyles = makeStyles(
+  (theme) => ({
+    root: {
+      width: "100%",
+      marginTop: "1em",
+      padding: "0.4em 1em",
+    },
+    // quesForm: {
+    //   paddingTop: "0.8em",
+    // },
+    // inputWrapper: {
+    //   marginBottom: "2em",
+    // },
+    // inputField: {
+    //   marginTop: "0.4em",
+    // },
+    // submitBtn: {
+    //   [theme.breakpoints.down("xs")]: {
+    //     width: "100%",
+    //   },
+    // },
+    // tag: {
+    //   marginRight: "0.5em",
+    // },
+  }),
+  { index: 1 }
+);
+
 
 export const useVoteBtnsStyles = makeStyles(
   (theme) => ({
