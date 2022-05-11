@@ -19,10 +19,10 @@ const registerValidator = (username, password) => {
   };
 };
 
-const loginValidator = (username, password) => {
+const loginValidator = (email, password) => {
   const errors = {};
 
-  if (username.trim() === "") {
+  if (!email) {
     errors.username = "Username field must not be empty.";
   }
 

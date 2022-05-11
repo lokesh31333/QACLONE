@@ -7,7 +7,6 @@ import ErrorMessage from "../components/ErrorMessage";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BASE_URL } from "../utils/helperFuncs";
-
 import {
   Typography,
   TextField,
@@ -18,27 +17,26 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useAskQuesPageStyles } from "../styles/muiStyles";
 import localStorage from "../utils/localStorage";
+import RichTextEditorComponent from "../components/RichTextEditorComponent";
 
 const validationSchema = yup.object({
   title: yup
     .string()
     .required("Required")
     .min(15, "Must be at least 15 characters"),
-  body: yup
-    .string()
-    .required("Required")
-    .min(30, "Must be at least 30 characters"),
 });
 
 const AskQuestionPage = () => {
   const classes = useAskQuesPageStyles();
   const history = useHistory();
-  const { editValues, clearEdit, notify } = useStateContext();
+  const [bodyHtml, setBodyHtml] = useState();
+  const [bodyContent, setBodyContent] = useState();
+  const { editValues, notify } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(editValues ? editValues.tags : []);
   const [errorMsg, setErrorMsg] = useState(null);
-  const { register, handleSubmit, reset, errors } = useForm({
+  const { register, handleSubmit, errors } = useForm({
     defaultValues: {
       title: editValues ? editValues.title : "",
       body: editValues ? editValues.body : "",
@@ -49,13 +47,16 @@ const AskQuestionPage = () => {
 
   const postQuestion = async ({ title, body }) => {
     if (tags.length === 0) return setErrorMsg("Atleast one tag must be added.");
-    console.log(title, body);
+    if (!bodyContent || bodyContent.length < 30) {
+      console.log("errorr");
+      return setErrorMsg("Body should be at least 30 characters");
+    }
     try {
       setIsLoading(true);
       const loggedUser = localStorage.loadUser();
       const newQuestion = await axios.post(
         `${BASE_URL}/questions/new`,
-        { title, body, tags },
+        { title, body: bodyHtml, tags },
         {
           headers: {
             authorization: loggedUser?.token,
@@ -74,15 +75,19 @@ const AskQuestionPage = () => {
     }
   };
 
-  const editQuestion = async ({ title, body, tags }) => {
+  const editQuestion = async ({ title, body }) => {
+    console.log(title, body, tags);
     if (tags.length === 0) return setErrorMsg("Atleast one tag must be added.");
-
+    if (!bodyContent || bodyContent.length < 30) {
+      console.log("errorr");
+      return setErrorMsg("Body should be at least 30 characters");
+    }
     try {
       setIsLoading(true);
       const loggedUser = localStorage.loadUser();
-      const updatedQuestion = await axios.post(
+      const updatedQuestion = await axios.put(
         `${BASE_URL}/questions/update`,
-        { title, body, tags },
+        { quesId: editValues.quesId, title, body: bodyHtml, tags },
         {
           headers: {
             authorization: loggedUser?.token,
@@ -134,6 +139,11 @@ const AskQuestionPage = () => {
     }
   };
 
+  const onBodyChange = (value) => {
+    setBodyHtml(value.toString());
+    setBodyContent(value.replace(/<(.|\n)*?>/g, ""));
+  };
+
   return (
     <div className={classes.root}>
       <Typography variant="h5" color="secondary">
@@ -176,28 +186,10 @@ const AskQuestionPage = () => {
             Include all the information someone would need to answer your
             question
           </Typography>
-          <TextField
-            required
-            multiline
-            rows={5}
-            fullWidth
-            inputRef={register}
-            name="body"
-            placeholder="Enter atleast 30 characters"
-            type="text"
-            label="Body"
-            variant="outlined"
-            size="small"
-            error={"body" in errors}
-            helperText={"body" in errors ? errors.body.message : ""}
-            className={classes.inputField}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <div></div>
-                </InputAdornment>
-              ),
-            }}
+
+          <RichTextEditorComponent
+            onBodyChange={onBodyChange}
+            content={editValues?.body}
           />
         </div>
         <div className={classes.inputWrapper}>

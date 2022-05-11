@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
-const commentSchema = require('./comment').schema;
-const schemaCleaner = require('../utils/schemaCleaner');
+const mongoose = require("mongoose");
+const commentSchema = require("./comment").schema;
+const schemaCleaner = require("../utils/schemaCleaner");
 
 const answerSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   body: {
@@ -22,13 +22,13 @@ const answerSchema = new mongoose.Schema({
   upvotedBy: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   downvotedBy: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   createdAt: {
@@ -43,4 +43,4 @@ const answerSchema = new mongoose.Schema({
 
 schemaCleaner(answerSchema);
 
-module.exports = mongoose.model('Answer', answerSchema);
+module.exports = mongoose.model("Answer", answerSchema);

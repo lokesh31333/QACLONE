@@ -54,6 +54,12 @@ const UserPage = () => {
     recentAnswers,
   } = fetchedUser;
 
+  const badgeMap = {
+    Gold: "/static/gold-badge.png",
+    Silver: "/static/silver-badge.png",
+    Bronze: "/static/bronze-badge.png",
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.userCard}>
@@ -67,6 +73,12 @@ const UserPage = () => {
         <Typography variant="h5" color="secondary" className={classes.cardText}>
           {reputation} <Typography variant="caption">REPUTATION</Typography>
         </Typography>
+        {fetchedUser.badge && fetchedUser.badge !== "No Badge" && (
+          <Avatar
+            src={badgeMap[fetchedUser.badge]}
+            className={classes.avatar}
+          />
+        )}
       </div>
       <div className={classes.infoCard}>
         <div className={classes.userInfo}>
