@@ -126,11 +126,12 @@ const Chats = () => {
 
 
       <div style={{float: "left"}}>
-        {isLoading ? "Loading..." : users.map((item, idx) => (
+        {
+          isLoading ? "Loading..." : users ? users.map((item, idx) => (
           <div style={{display: "flex", padding: "10px"}} key={idx}>
             <div onClick={() => changeUserChat(item)}>{item.username}</div>
           </div>
-        ))
+          )) : "No Previous Conversation"
         }
       </div>
       <div>
