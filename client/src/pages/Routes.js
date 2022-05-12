@@ -12,7 +12,6 @@ import { useAuthContext } from "../context/auth";
 
 import { Container, Grid } from "@material-ui/core";
 import PendingQuestionsPage from "./PendingQuestionsPage";
-import {Container, Grid} from '@material-ui/core';
 import Chats from '../components/Chats';
 import DetailedChat from '../components/DetailedChat';
 

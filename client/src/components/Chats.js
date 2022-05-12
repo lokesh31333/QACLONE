@@ -15,7 +15,6 @@ import {useEffect, useState} from "react";
 import localStorage from "../utils/localStorage";
 import {useStateContext} from "../context/state";
 import DetailedChat from './DetailedChat';
-import NewChat from './NewChat';
 
 const Chats = () => {
   const classes = useMessageStyles();
