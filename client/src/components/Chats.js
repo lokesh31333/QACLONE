@@ -25,7 +25,7 @@ const Chats = () => {
   const [conversation, setConversation] = useState(null);
   const [message, setMessage] = useState(null);
   const [search, setSearch] = useState(null);
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState([]);
   const [allusers, setAllUsers] = useState();
   const loggedUser = localStorage.loadUser();
 
@@ -127,7 +127,7 @@ const Chats = () => {
 
       <div style={{float: "left"}}>
         {
-          isLoading ? "Loading..." : users ? users.map((item, idx) => (
+          isLoading ? "Loading..." : users !== [] ? users.map((item, idx) => (
           <div style={{display: "flex", padding: "10px"}} key={idx}>
             <div onClick={() => changeUserChat(item)}>{item.username}</div>
           </div>
