@@ -9,7 +9,7 @@ const sequelize = new Sequelize(
     host: process.env.DATABASE_HOST,
     dialect: "mysql",
     /* Using port 3307 to aviod port conflict with other database instances on your machine */
-    port: 3307,
+    port: 3306,
   }
 );
 const db = {};

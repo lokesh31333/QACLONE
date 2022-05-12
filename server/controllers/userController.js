@@ -79,6 +79,50 @@ const getUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const insertbookmark = async (req, res) => {
+  
+  // console.log(req.body)
+  const {ques} = req.body;
+  const {authorization} = req.headers;
+  const loggedUser = authorization;
+  const {quesId} = ques;
+  // console.log(quesId)
+  // console.log(loggedUser)
+  
+  try {
+    const user = await User.findById(loggedUser);
+    // console.log(loggedUser.id)
+    const question = await Question.findById(quesId);
+    if (!question) {
+      throw new Error(`Question with ID: ${quesId} does not exist in DB.`);
+    }
+    if (question.author.toString() === user._id.toString()) {
+      console.log("You cant bookmark your own question")
+      throw new Error("You can't bookmark your own question.");
+    }
+    // console.log(User.find({_id:loggedUser,bookmarks: {"$in": [quesId]}}))
+    // console.log(question)
+    // console.log(user)
+    // console.log(user.bookmarks)
+    if(user.bookmarks.includes(quesId))
+    {
+      // console.log("exists")
+      // let arr = ['A', 'B', 'C'];
+      // user.bookmarks = user.bookmarks.filter(e => e !== quesId);
+      user.bookmarks.splice(user.bookmarks.indexOf(quesId), 1);
+      user.save()
+      console.log("removed")
+    }
+    else{
+      user.bookmarks.push(quesId)
+      user.save()
+    }
+    return res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 const getAllUsers = async (req, res) => {
   const allUsers = await User.find({}).select("username createdAt");
   return res.status(200).json(allUsers);
@@ -87,4 +131,5 @@ const getAllUsers = async (req, res) => {
 module.exports = {
   getUser,
   getAllUsers,
+  insertbookmark
 };

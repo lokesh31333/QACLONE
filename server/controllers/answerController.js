@@ -5,7 +5,8 @@ const ReputationScore = require("../models/reputationScore");
 
 const postAnswer = async (req, res) => {
   const loggedUser = req.user;
-  const { quesId, body } = req.body;
+  const { quesId, value } = req.body;
+  const body = value;
 
   try {
     if (body.trim() === "" || body.length < 30) {

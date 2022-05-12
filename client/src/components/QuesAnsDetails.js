@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { UpvoteButton, DownvoteButton } from "./VoteButtons";
+import { BookmarkButton } from './Bookmarkbutton';
 import { useAuthContext } from "../context/auth";
 import PostedByUser from "./PostedByUser";
 import CommentSection from "./CommentSection";
@@ -8,6 +9,7 @@ import AcceptAnswerButton from "./AcceptAnswerButton";
 import DeleteDialog from "./DeleteDialog";
 import AuthFormModal from "./AuthFormModal";
 import { ReactComponent as AcceptedIcon } from "../svg/accepted.svg";
+import parse from 'html-react-parser';
 
 import {
   Typography,
@@ -26,6 +28,7 @@ const QuesAnsDetails = ({
   editQuesAns,
   deleteQuesAns,
   addComment,
+  bookmarkqs,
   editComment,
   deleteComment,
   acceptAnswer,
@@ -112,7 +115,10 @@ const QuesAnsDetails = ({
       </div>
       <div className={classes.quesBody}>
         {!editAnsOpen ? (
+          <Typography variant="body1" style={{ wordWrap: 'anywhere' }}>
           <RichTextEditorComponent content={body} isReadOnly={true} />
+            {parse(body)}
+          </Typography>
         ) : (
           <form className={classes.smallForm} onSubmit={handleAnswerEdit}>
             <TextField

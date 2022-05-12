@@ -10,6 +10,7 @@ import { Typography, useMediaQuery, Divider } from "@material-ui/core";
 import { useQuesPageStyles } from "../styles/muiStyles";
 import { useTheme } from "@material-ui/core/styles";
 import localStorage from "../utils/localStorage";
+import parse from 'html-react-parser'
 
 const AnswerList = ({ quesId, answers, acceptedAnswer, quesAuthor }) => {
   const { notify } = useStateContext();
@@ -268,4 +269,4 @@ const AnswerList = ({ quesId, answers, acceptedAnswer, quesAuthor }) => {
   );
 };
 
-export default AnswerList;
+export default (AnswerList);
