@@ -41,7 +41,24 @@ const userSchema = new mongoose.Schema({
   badges:
     [
       {name: { type: String }, level: { type: String, default: "Bronze" }, badgeType: { type: String, default: "others" } }
-    ]
+    ],
+  totalQuestions: {
+    type: Number,
+    default: 0
+  },
+  totalAnswers: {
+    type: Number,
+    default: 0
+  },
+  upvotesGiven: {
+    type: Number,
+    default: 0
+  },
+  downvotesGiven: {
+    type: Number,
+    default: 0
+  }
+
 });
 
 userSchema.plugin(uniqueValidator);

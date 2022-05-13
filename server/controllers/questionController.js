@@ -1,6 +1,6 @@
 const Question = require("../models/question");
 const User = require("../models/user");
-const { questionValidator } = require("../utils/validators");
+const {questionValidator} = require("../utils/validators");
 const {
   paginateResults,
   downvoteIt,
@@ -17,7 +17,7 @@ const {
 const ReputationScore = require("../models/reputationScore");
 
 const getQuestions = async (req, res) => {
-  let { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
+  let {sortBy, filterByTag, filterBySearch, page, limit} = req.query;
 
   if (filterBySearch && !filterByTag) {
     const first = filterBySearch.indexOf("[");
@@ -31,48 +31,47 @@ const getQuestions = async (req, res) => {
   let sortQuery;
   switch (sortBy) {
     case "VOTES":
-      sortQuery = { points: -1 };
+      sortQuery = {points: -1};
       break;
     case "VIEWS":
-      sortQuery = { views: -1 };
+      sortQuery = {views: -1};
       break;
     case "NEWEST":
-      sortQuery = { createdAt: -1 };
+      sortQuery = {createdAt: -1};
       break;
     case "OLDEST":
-      sortQuery = { createdAt: 1 };
+      sortQuery = {createdAt: 1};
       break;
     default:
-      sortQuery = { hotAlgo: -1 };
+      sortQuery = {hotAlgo: -1};
   }
 
-  let findQuery = { pendingApproval: false };
+  let findQuery = {pendingApproval: false};
   if (filterByTag && filterBySearch) {
     findQuery = {
       ...findQuery, $and: [{
-        tags: { $all: [filterByTag] }
+        tags: {$all: [filterByTag]}
       },
-      {
-        $or: [
-          {
-            title: {
-              $regex: filterBySearch,
-              $options: "i",
+        {
+          $or: [
+            {
+              title: {
+                $regex: filterBySearch,
+                $options: "i",
+              },
             },
-          },
-          {
-            body: {
-              $regex: filterBySearch,
-              $options: "i",
+            {
+              body: {
+                $regex: filterBySearch,
+                $options: "i",
+              },
             },
-          },
-        ]
-      }]
+          ]
+        }]
     };
     console.log("findquery", findQuery)
-  }
-  else if (filterByTag) {
-    findQuery = { ...findQuery, tags: { $all: [filterByTag] } };
+  } else if (filterByTag) {
+    findQuery = {...findQuery, tags: {$all: [filterByTag]}};
   } else if (filterBySearch) {
     findQuery = {
       ...findQuery,
@@ -118,8 +117,8 @@ const getQuestions = async (req, res) => {
   }
 };
 const getPendingQuestions = async (req, res) => {
-  const { page, limit } = req.query;
-  let findQuery = { pendingApproval: true };
+  const {page, limit} = req.query;
+  let findQuery = {pendingApproval: true};
 
   try {
     const quesCount = await Question.find(findQuery).countDocuments();
@@ -129,7 +128,7 @@ const getPendingQuestions = async (req, res) => {
       quesCount
     );
     const questions = await Question.find(findQuery)
-      .sort({ _id: -1 })
+      .sort({_id: -1})
       .limit(parseInt(limit))
       .skip(paginated.startIndex)
       .populate("author", "username");
@@ -146,12 +145,12 @@ const getPendingQuestions = async (req, res) => {
 };
 
 const approveQuestion = async (req, res) => {
-  const { quesId } = req.body;
+  const {quesId} = req.body;
   console.log(quesId);
   const updatedQues = await Question.findByIdAndUpdate(
     quesId,
-    { pendingApproval: false },
-    { new: true }
+    {pendingApproval: false},
+    {new: true}
   )
     .populate("author", "username")
     .populate("comments.author", "username")
@@ -159,11 +158,11 @@ const approveQuestion = async (req, res) => {
     .populate("answers.comments.author", "username");
   console.log(updatedQues);
   await addQuestionToCache(updatedQues);
-  return res.status(200).json({ message: "Question Approved" });
+  return res.status(200).json({message: "Question Approved"});
 };
 
 const viewQuestion = async (req, res) => {
-  const { quesId } = req.query;
+  const {quesId} = req.query;
 
   try {
     const question = await Question.findById({
@@ -187,16 +186,16 @@ const viewQuestion = async (req, res) => {
 
     return res.status(200).json(populatedQues);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({message: err.message});
   }
 };
 
 const editQuestion = async (req, res) => {
   const loggedUser = req.user;
-  const { quesId, title, body, tags } = req.body;
+  const {quesId, title, body, tags} = req.body;
 
   try {
-    const { errors, valid } = questionValidator(title, body, tags);
+    const {errors, valid} = questionValidator(title, body, tags);
     if (!valid) {
       throw new Error(errors[0]);
     }
@@ -220,7 +219,7 @@ const editQuestion = async (req, res) => {
     const updatedQues = await Question.findByIdAndUpdate(
       quesId,
       updatedQuesObj,
-      { new: true }
+      {new: true}
     )
       .populate("author", "username")
       .populate("comments.author", "username")
@@ -229,17 +228,17 @@ const editQuestion = async (req, res) => {
     await updateQuestionFromCache(updatedQues);
     return res.status(200).json(updatedQues);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({message: err.message});
   }
 };
 
 const postQuestion = async (req, res) => {
   try {
     const loggedUser = req.user;
-    const { title, body, tags } = req.body;
+    const {title, body, tags} = req.body;
     const isPendingApproval = req.isPendingApproval;
 
-    const { errors, valid } = questionValidator(title, body, tags);
+    const {errors, valid} = questionValidator(title, body, tags);
     if (!valid) {
       throw new Error(errors[0]);
     }
@@ -256,21 +255,35 @@ const postQuestion = async (req, res) => {
       .populate("author", "username")
       .execPopulate();
 
-    author.questions.push({ quesId: savedQues._id });
+    author.questions.push({quesId: savedQues._id});
     await author.save();
     if (!isPendingApproval) {
       const addedToCache = await addQuestionToCache(populatedQues);
       console.log("addedToCache: ", addedToCache);
     }
+    const totalQuestion = author.totalQuestions + 1;
+
+    console.log("Queastion numbers===", totalQuestion, res.body)
+    if (totalQuestion > 2 && totalQuestion < 5) {
+      author.badges.filter(b => b.name === 'Curious').map(c => c.level = "Silver")
+      console.log("Author updated silver", author)
+    } else if (totalQuestion >= 5) {
+      author.badges.filter(b => b.name === 'Curious').map(c => c.level = "Gold")
+      console.log("Author updated gold", author)
+    }
+
+    await author.save()
+    await author.update({$inc: {totalQuestions: 1}})
+
     return res.status(200).json(populatedQues);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({message: err.message});
   }
 };
 
 const deleteQuestion = async (req, res) => {
   const loggedUser = req.user;
-  const { quesId } = req.params;
+  const {quesId} = req.params;
 
   try {
     const user = await User.findById(loggedUser.id);
@@ -288,15 +301,15 @@ const deleteQuestion = async (req, res) => {
 
     await Question.findByIdAndDelete(quesId);
     await removeQuestionFromCache(quesId);
-    return res.status(200).json({ deletedId: question._id });
+    return res.status(200).json({deletedId: question._id});
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({message: err.message});
   }
 };
 
 const voteQuestion = async (req, res) => {
   const loggedUser = req.user;
-  const { quesId, voteType } = req.body;
+  const {quesId, voteType} = req.body;
 
   try {
     const user = await User.findById(loggedUser.id);
@@ -308,7 +321,7 @@ const voteQuestion = async (req, res) => {
     if (question.author.toString() === user._id.toString()) {
       throw new Error("You can't vote for your own post.");
     }
-    let reputationObject = { author: question.author, questionId: quesId };
+    let reputationObject = {author: question.author, questionId: quesId};
     let votedQues;
     if (voteType.toLowerCase() === "upvote") {
       votedQues = upvoteIt(question, user);
@@ -346,12 +359,12 @@ const voteQuestion = async (req, res) => {
       .execPopulate();
     return res.status(200).json(saved);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({message: err.message});
   }
 };
 
 const checkIfNeedAdminApproval = async (req, res, next) => {
-  const { tags } = req.body;
+  const {tags} = req.body;
   const tagsFromQues = await Question.find({}).select("tags");
   const tagsArray = tagsFromQues.map((t) => t.tags).flat();
   const currentQuestionTags = {};

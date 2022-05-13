@@ -19,6 +19,7 @@ const getUser = async (req, res) => {
       throw new Error(`User '${username}' does not exist.`);
     }
 
+    // TODO: change total no of questions here
     const recentQuestions = await Question.find({ author: user._id })
       .sort({ createdAt: -1 })
       .select("id title points createdAt")
