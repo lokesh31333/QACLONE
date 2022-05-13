@@ -154,7 +154,7 @@ const AskQuestionPage = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h5" color="secondary">
-        {editValues ? "Edit Your Question" : "Ask A Question"}
+        {editValues ? "Edit Your Question" : "Ask a public question"}
       </Typography>
       <form
         className={classes.quesForm}
@@ -163,7 +163,10 @@ const AskQuestionPage = () => {
         }
       >
         <div className={classes.inputWrapper}>
-          <Typography variant="caption" color="secondary">
+
+          <h3>Title</h3>
+
+          <Typography variant="caption" color="">
             Be specific and imagine you’re asking a question to another person
           </Typography>
           <TextField
@@ -173,7 +176,7 @@ const AskQuestionPage = () => {
             name="title"
             placeholder="Enter atleast 15 characters"
             type="text"
-            label="Title"
+            label=""
             variant="outlined"
             size="small"
             error={"title" in errors}
@@ -189,7 +192,8 @@ const AskQuestionPage = () => {
           />
         </div>
         <div className={classes.inputWrapper}>
-          <Typography variant="caption" color="secondary">
+          <h3>Body</h3>
+          <Typography variant="caption" color="">
             Include all the information someone would need to answer your
             question
           </Typography>
@@ -200,7 +204,8 @@ const AskQuestionPage = () => {
           />
         </div>
         <div className={classes.inputWrapper}>
-          <Typography variant="caption" color="secondary">
+          <h3>Tags</h3>
+          <Typography variant="caption" color="">
             Add up to 5 tags to describe what your question is about
           </Typography>
           <Autocomplete
