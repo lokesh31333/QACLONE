@@ -308,60 +308,105 @@ const deleteQuestion = async (req, res) => {
 };
 
 const voteQuestion = async (req, res) => {
-  const loggedUser = req.user;
-  const {quesId, voteType} = req.body;
+    const loggedUser = req.user;
+    const {quesId, voteType} = req.body;
 
-  try {
-    const user = await User.findById(loggedUser.id);
-    const question = await Question.findById(quesId);
-    if (!question) {
-      throw new Error(`Question with ID: ${quesId} does not exist in DB.`);
-    }
+    try {
+      const user = await User.findById(loggedUser.id);
+      const question = await Question.findById(quesId);
+      if (!question) {
+        throw new Error(`Question with ID: ${quesId} does not exist in DB.`);
+      }
 
-    if (question.author.toString() === user._id.toString()) {
-      throw new Error("You can't vote for your own post.");
-    }
-    let reputationObject = {author: question.author, questionId: quesId};
-    let votedQues;
-    if (voteType.toLowerCase() === "upvote") {
-      votedQues = upvoteIt(question, user);
-      reputationObject = {
-        ...reputationObject,
-        reputationScoreType: "UPVOTE_QUESTION",
-        score: 10,
-      };
-    } else {
-      reputationObject = {
-        ...reputationObject,
-        reputationScoreType: "DOWNVOTE_QUESTION",
-        score: -10,
-      };
-      votedQues = downvoteIt(question, user);
-    }
-    const reputationScore = new ReputationScore(reputationObject);
-    await reputationScore.save();
-    votedQues.hotAlgo =
-      Math.log(Math.max(Math.abs(votedQues.points), 1)) +
-      Math.log(Math.max(votedQues.views * 2, 1)) +
-      votedQues.createdAt / 4500;
+      if (question.author.toString() === user._id.toString()) {
+        throw new Error("You can't vote for your own post.");
+      }
+      let reputationObject = {author: question.author, questionId: quesId};
+      let votedQues;
 
-    const savedQues = await votedQues.save();
-    const author = await User.findById(question.author);
-    const addedRepAuthor = quesRep(question, author);
-    await addedRepAuthor.save();
-    console.log("new points", savedQues.points);
-    await updateQuestionVotePoints(savedQues._id, savedQues.points);
-    const saved = await savedQues
-      .populate("author", "username")
-      .populate("comments.author", "username")
-      .populate("answers.author", "username")
-      .populate("answers.comments.author", "username")
-      .execPopulate();
-    return res.status(200).json(saved);
-  } catch (err) {
-    res.status(500).json({message: err.message});
+      if (voteType.toLowerCase() === "upvote") {
+        votedQues = await upvoteIt(question, user);
+        reputationObject = {
+          ...reputationObject,
+          reputationScoreType: "UPVOTE_QUESTION",
+          score: 10,
+        };
+      } else {
+        reputationObject = {
+          ...reputationObject,
+          reputationScoreType: "DOWNVOTE_QUESTION",
+          score: -10,
+        };
+        votedQues = downvoteIt(question, user);
+      }
+      const reputationScore = new ReputationScore(reputationObject);
+      await reputationScore.save();
+      votedQues.hotAlgo =
+        Math.log(Math.max(Math.abs(votedQues.points), 1)) +
+        Math.log(Math.max(votedQues.views * 2, 1)) +
+        votedQues.createdAt / 4500;
+
+      const savedQues = await votedQues.save();
+      const author = await User.findById(question.author);
+      const addedRepAuthor = quesRep(question, author);
+      await addedRepAuthor.save();
+      console.log("new points", savedQues.points);
+      await updateQuestionVotePoints(savedQues._id, savedQues.points);
+      const saved = await savedQues
+        .populate("author", "username")
+        .populate("comments.author", "username")
+        .populate("answers.author", "username")
+        .populate("answers.comments.author", "username")
+        .execPopulate();
+
+
+      console.log("VOted quesss===", loggedUser.id, votedQues)
+      if (voteType.toLowerCase() === "upvote") {
+        let upvotesGiven = 0
+        console.log("comparisn", loggedUser.id, votedQues.upvotedBy)
+        if (votedQues.upvotedBy.includes(loggedUser.id.toString())) {
+          upvotesGiven = user.upvotesGiven + 1;
+          user.upvotesGiven = user.upvotesGiven + 1;
+        } else {
+          upvotesGiven = user.upvotesGiven - 1;
+          user.upvotesGiven = user.upvotesGiven - 1;
+        }
+        console.log("Queastion upvote numbers===", upvotesGiven, res.body)
+        if (upvotesGiven > 2 && upvotesGiven < 5) {
+          user.badges.filter(b => b.name === 'Sportsmanship').map(c => c.level = "Silver")
+          console.log("Author updated silver", user)
+        } else if (upvotesGiven >= 5) {
+          user.badges.filter(b => b.name === 'Sportsmanship').map(c => c.level = "Gold")
+          console.log("Author updated gold", user)
+        }
+        await user.save();
+      } else {
+        let dvGiven = user.downvotesGiven - 1;
+        console.log("comparisn", loggedUser.id, votedQues.upvotedBy)
+        if (votedQues.downvotedBy.includes(loggedUser.id.toString())) {
+          user.downvotesGiven = user.downvotesGiven - 1;
+        } else {
+          dvGiven = user.downvotesGiven + 1;
+          user.downvotesGiven = user.downvotesGiven + 1;
+        }
+        console.log("Queastion upvote numbers===", dvGiven, res.body)
+        if (dvGiven > 2 && dvGiven < 5) {
+          user.badges.filter(b => b.name === 'Sportsmanship').map(c => c.level = "Silver")
+          console.log("Author updated silver", user)
+        } else if (dvGiven >= 5) {
+          user.badges.filter(b => b.name === 'Sportsmanship').map(c => c.level = "Gold")
+          console.log("Author updated gold", user)
+        }
+        await user.save();
+      }
+      return res.status(200).json(saved);
+    } catch
+      (err) {
+      console.log("Errorrrrr", err)
+      res.status(500).json({message: err.message});
+    }
   }
-};
+;
 
 const checkIfNeedAdminApproval = async (req, res, next) => {
   const {tags} = req.body;
