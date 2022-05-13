@@ -14,6 +14,7 @@ import localStorage from "../utils/localStorage";
 
 
 import '../css/Admin.css'
+import Badges from '../components/Badges';
 const UserPage = () => {
   const classes = useUserPageStyles();
   const { notify } = useStateContext();
@@ -23,7 +24,7 @@ const UserPage = () => {
   const loggedUser = localStorage.loadUser();
   console.log(loggedUser)
   var flag=false; //To handle if user is admin
-  if(loggedUser.role=='admin'){
+  if(loggedUser.role==='admin'){
     flag=true;
     console.log(`Logged in user is Admin`,flag);
   }
@@ -35,7 +36,13 @@ const UserPage = () => {
         const { data } = getUser;
         setIsLoading(false);
         setFetchedUser(data);
-        
+        console.log(data.role);
+        console.log("With badges===", data);
+
+        if(data.role==='admin'){
+          flag=true;
+          console.log(`Logged in user is Admin`,flag);
+        }
 
       } catch (error) {
         console.log(error);
@@ -76,7 +83,7 @@ const UserPage = () => {
     Bronze: "/static/bronze-badge.png",
   };
 
-  // if(fetchedUser.role=='admin'){
+  // if(fetchedUser.role==='admin'){
   //   flag=true;
   //   console.log(`Logged in user is Admin`,flag);
   // }
@@ -193,8 +200,11 @@ const UserPage = () => {
             )}
           </div>
         </div>
+        <div>
+          <Badges badges={fetchedUser.badges}/>
+        </div>
       </div>
-      
+
      {(flag && (<div className='admin'>
             <Button  variant="contained" className='create-button'  component = {Link} to={`/user/${username}/addtag`}>Add Tags</Button>
             <Button variant="contained" className='create-button'  component = {Link} to={`/user/${username}/review`}>Review</Button>

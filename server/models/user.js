@@ -19,26 +19,46 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role: { type: String, default: "user",enum: ['user','admin'] },
-  email: { type: String },
+  role: {type: String, default: "user", enum: ['user', 'admin']},
+  email: {type: String},
   questions: [
     {
-      quesId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
-      rep: { type: Number, default: 0 },
+      quesId: {type: mongoose.Schema.Types.ObjectId, ref: "Question"},
+      rep: {type: Number, default: 0},
     },
   ],
-  bookmarks: [ String
-  ],
+  bookmarks: [String],
   answers: [
     {
-      ansId: { type: mongoose.Schema.Types.ObjectId, ref: "Answer" },
-      rep: { type: Number, default: 0 },
+      ansId: {type: mongoose.Schema.Types.ObjectId, ref: "Answer"},
+      rep: {type: Number, default: 0},
     },
   ],
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  badges:
+    [
+      {name: { type: String }, level: { type: String, default: "Bronze" }, badgeType: { type: String, default: "others" } }
+    ],
+  totalQuestions: {
+    type: Number,
+    default: 0
+  },
+  totalAnswers: {
+    type: Number,
+    default: 0
+  },
+  upvotesGiven: {
+    type: Number,
+    default: 0
+  },
+  downvotesGiven: {
+    type: Number,
+    default: 0
+  }
+
 });
 
 userSchema.plugin(uniqueValidator);
