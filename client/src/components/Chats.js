@@ -1,9 +1,9 @@
 import axios from "axios";
-import {Link, Link as RouterLink} from "react-router-dom";
+import { Link, Link as RouterLink } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
-import {BASE_URL} from "../utils/helperFuncs";
-import {Typography, Chip, useMediaQuery, Grid, Button} from "@material-ui/core";
-import {useTheme} from "@material-ui/core/styles";
+import { BASE_URL } from "../utils/helperFuncs";
+import { Typography, Chip, useMediaQuery, Grid, Button } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 import {
   useMenuStyles,
   useMessage,
@@ -11,14 +11,14 @@ import {
   useQuesPageStyles,
   useRightSidePanelStyles
 } from "../styles/muiStyles";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import localStorage from "../utils/localStorage";
-import {useStateContext} from "../context/state";
+import { useStateContext } from "../context/state";
 import DetailedChat from './DetailedChat';
 
 const Chats = () => {
   const classes = useMessageStyles();
-  const {notify} = useStateContext();
+  const { notify } = useStateContext();
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -61,7 +61,7 @@ const Chats = () => {
 
   useEffect(() => {
     const changeUserChat = async () => {
-      const _allUsers = await axios.get(`${BASE_URL}/users/all`,  {
+      const _allUsers = await axios.get(`${BASE_URL}/users/all`, {
         headers: {
           authorization: loggedUser?.token
         }
@@ -75,7 +75,7 @@ const Chats = () => {
 
   const changeUserChat = async (user) => {
     console.log("Item cjlicked", user)
-    const getConvo = await axios.post(`${BASE_URL}/messages/conversation`, {otherUser: user.id}, {
+    const getConvo = await axios.post(`${BASE_URL}/messages/conversation`, { otherUser: user.id }, {
       headers: {
         authorization: loggedUser?.token
       }
@@ -90,7 +90,8 @@ const Chats = () => {
     const getConvo = await axios.post(`${BASE_URL}/messages/add`, {
       receiver: currentUser.id,
       message,
-      createdAt: new Date().toLocaleDateString("en-US"),
+      // createdAt: new Date().toLocaleDateString("en-US"),
+      createdAt: new Date(),
       sender: loggedUser.id
     }, {
       headers: {
@@ -104,8 +105,8 @@ const Chats = () => {
   const searchNewUsers = () => {
     // TODO: change to filter
     const filteredUsrs = []
-    for(let i in allusers) {
-      if(allusers[i].username.includes(search)) {
+    for (let i in allusers) {
+      if (allusers[i].username.includes(search)) {
         filteredUsrs.push(allusers[i])
       }
     }
@@ -120,27 +121,27 @@ const Chats = () => {
       </Typography>
 
       <div>
-        <input onChange={(e) => setSearch(e.target.value)} type='text' placeholder='New Convo'/>
+        <input onChange={(e) => setSearch(e.target.value)} type='text' placeholder='New Convo' />
         <Button onClick={searchNewUsers}>Add New Chat</Button>
       </div>
 
 
-      <div style={{float: "left"}}>
+      <div style={{ float: "left" }}>
         {
           isLoading ? "Loading..." : users !== [] ? users.map((item, idx) => (
-          <div style={{display: "flex", padding: "10px"}} key={idx}>
-            <div onClick={() => changeUserChat(item)}>{item.username}</div>
-          </div>
+            <div style={{ display: "flex", padding: "10px" }} key={idx}>
+              <div onClick={() => changeUserChat(item)}>{item.username}</div>
+            </div>
           )) : "No Previous Conversation"
         }
       </div>
       <div>
-        <DetailedChat otherUser={currentUser} conversation={conversation}/>
-        <div style={{position: "fixed", bottom: "0"}}>
+        <DetailedChat otherUser={currentUser} conversation={conversation} />
+        <div style={{ position: "fixed", bottom: "0" }}>
           {
             currentUser ?
               <div>
-                <input onChange={(e) => setMessage(e.target.value)} type='text' placeholder='Type a message'/>
+                <input onChange={(e) => setMessage(e.target.value)} type='text' placeholder='Type a message' />
                 <Button onClick={addMessage}>Send Message</Button>
 
               </div> : ""

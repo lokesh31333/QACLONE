@@ -53,33 +53,33 @@ const Routes = () => {
           <Route exact path="/user/:username">
             <NavMenuDesktop />
             <UserPage />
-                
+            <RightSidePanel />
           </Route>
 
           <Route exact path="/user/:username/addtag">
-                  <NavMenuDesktop />
-                    <UserPage />
-                    <div>
-                    <AddTag/>
-                    </div>
-                </Route>
+            <NavMenuDesktop />
+            <UserPage />
+            <div>
+              <AddTag />
+            </div>
+          </Route>
 
           <Route exact path="/user/:username/review">
             <NavMenuDesktop />
             Question Review Page
-              <div>
-              <QuesReviewPage/>
-              </div>
+            <div>
+              <QuesReviewPage />
+            </div>
           </Route>
 
           <Route exact path="/user/:username/dashboard">
             <NavMenuDesktop />
             Analytics Dashboard Page
-              <div>
-              <Analytics/>
-              </div>
+            <div>
+              <Analytics />
+            </div>
           </Route>
-          
+
 
           <Route exact path="/questions/:quesId">
             <NavMenuDesktop />
@@ -95,12 +95,13 @@ const Routes = () => {
             <RightSidePanel />
           </Route>
           <Route exact path="/search/:query">
-            <NavMenuDesktop/>
-            <QuesListPage searchFilterActive={true}/>
-            <RightSidePanel/>
+            <NavMenuDesktop />
+            <QuesListPage searchFilterActive={true} />
+            <RightSidePanel />
           </Route>
           <Route exact path="/messages" >
-            <Chats/>
+            <NavMenuDesktop />
+            <Chats />
           </Route>
           <Route>
             <NavMenuDesktop />

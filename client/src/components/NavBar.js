@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import DarkModeSwitch from "./DarkModeSwitch";
 import { useAuthContext } from "../context/auth";
 import SofLogo from "../svg/stack-overflow.svg";
+import Chats from "./Chats";
 
 import {
   AppBar,
@@ -105,13 +106,22 @@ const NavBar = () => {
                 >
                   <SearchIcon />
                 </IconButton>
-                <DarkModeSwitch />
+                <Button
+                  className={classes.logo}
+                  component={RouterLink}
+                  to="/messages"
+                >Chat</Button>
                 <UserMenuMobile user={user} logoutUser={handleLogout} />
               </>
             ) : (
               <>
+                <Button
+                  className={classes.logo}
+                  component={RouterLink}
+                  to="/messages"
+                >Chat</Button>
                 <UserMenuDesktop user={user} logoutUser={handleLogout} />
-                <DarkModeSwitch />
+                {/* <DarkModeSwitch /> */}
               </>
             )}
           </Container>
