@@ -6,7 +6,7 @@ const customTheme = (darkMode) =>
       type: darkMode ? "dark" : "light",
       primary: {
         // main: darkMode ? '#c197db' : '#964ec2',
-        main: darkMode ? "#f78a36" : "#ff6f00",
+        main: darkMode ? "#f78a36" : "#F48024",
       },
       secondary: {
         main: darkMode ? "#ff6f00" : "#ff6f00",
