@@ -1,4 +1,7 @@
 const Question = require("../models/question");
+const Tag = require("../models/tag");
+const errors = require("../../../../final/Etsy-Clone/backend/util/errors");
+
 
 const getAllTags = async (req, res) => {
   try {
@@ -22,6 +25,33 @@ const getAllTags = async (req, res) => {
   }
 };
 
+const createTag = async (req, res) => {
+  console.log(`inside createTag backend`);
+  console.log(`printing req data`, JSON.stringify(req.body));
+
+  const tag = req.body;
+
+  try {
+    const createdTag = await Tag.create(tag);
+
+    const result = await Tag.findOne(
+      { _id: createdTag.id  } //todo handle media
+    );
+
+    res.status(201).json(result);
+    return;
+  } catch (err) {
+    console.error(err);
+    if (err.original) {
+      res.status(500).json({ status: 500, message: err.original.sqlMessage });
+    } else {
+      res.status(500).json(errors.serverError);
+    }
+  }
+};
+
+
 module.exports = {
   getAllTags,
+  createTag
 };

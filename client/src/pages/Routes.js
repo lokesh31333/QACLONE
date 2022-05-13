@@ -15,6 +15,10 @@ import PendingQuestionsPage from "./PendingQuestionsPage";
 import Chats from '../components/Chats';
 import DetailedChat from '../components/DetailedChat';
 
+import AddTag from "./AddTag";
+import QuesReviewPage from "./QuesReviewPage";
+import Analytics from "./Analytics";
+
 const Routes = () => {
   const { user } = useAuthContext();
 
@@ -49,15 +53,42 @@ const Routes = () => {
           <Route exact path="/user/:username">
             <NavMenuDesktop />
             <UserPage />
+                
           </Route>
+
+          <Route exact path="/user/:username/addtag">
+                  <NavMenuDesktop />
+                    <UserPage />
+                    <div>
+                    <AddTag/>
+                    </div>
+                </Route>
+
+          <Route exact path="/user/:username/review">
+            <NavMenuDesktop />
+            Question Review Page
+              <div>
+              <QuesReviewPage/>
+              </div>
+          </Route>
+
+          <Route exact path="/user/:username/dashboard">
+            <NavMenuDesktop />
+            Analytics Dashboard Page
+              <div>
+              <Analytics/>
+              </div>
+          </Route>
+          
+
           <Route exact path="/questions/:quesId">
             <NavMenuDesktop />
             <QuestionPage />
           </Route>
-          <Route exact path="/approve">
+          {/* <Route exact path="/approve">
             <NavMenuDesktop />
             <PendingQuestionsPage />
-          </Route>
+          </Route> */}
           <Route exact path="/tags/:tagName">
             <NavMenuDesktop />
             <QuesListPage tagFilterActive={true} />

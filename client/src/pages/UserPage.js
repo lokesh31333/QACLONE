@@ -8,14 +8,16 @@ import { BASE_URL, formatDateAgo } from "../utils/helperFuncs";
 
 import { Avatar, Typography, Divider } from "@material-ui/core";
 import { useUserPageStyles } from "../styles/muiStyles";
-
+import Button from '@mui/material/Button';
+import { Link ,Outlet} from 'react-router-dom'
+import '../css/Admin.css'
 const UserPage = () => {
   const classes = useUserPageStyles();
   const { notify } = useStateContext();
   const { username } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [fetchedUser, setFetchedUser] = useState(null);
-
+  var flag=false; //To handle if user is admin
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -24,6 +26,12 @@ const UserPage = () => {
         const { data } = getUser;
         setIsLoading(false);
         setFetchedUser(data);
+        console.log(data.role);
+        if(data.role=='admin'){
+          flag=true;
+          console.log(`Logged in user is Admin`,flag);
+        }
+
       } catch (error) {
         console.log(error);
         setIsLoading(false);
@@ -35,6 +43,8 @@ const UserPage = () => {
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+
   if (isLoading || !fetchedUser) {
     return (
       <div style={{ minWidth: "100%", marginTop: "20%" }}>
@@ -46,6 +56,7 @@ const UserPage = () => {
   const {
     id,
     username: userName,
+    role,
     createdAt,
     reputation,
     totalQuestions,
@@ -59,6 +70,11 @@ const UserPage = () => {
     Silver: "/static/silver-badge.png",
     Bronze: "/static/bronze-badge.png",
   };
+
+  if(fetchedUser.role=='admin'){
+    flag=true;
+    console.log(`Logged in user is Admin`,flag);
+  }
 
   return (
     <div className={classes.root}>
@@ -173,6 +189,12 @@ const UserPage = () => {
           </div>
         </div>
       </div>
+      
+     {(flag && (<div className='admin'>
+            <Button  variant="contained" className='create-button'  component = {Link} to={`/user/${username}/addtag`}>Add Tags</Button>
+            <Button variant="contained" className='create-button'  component = {Link} to={`/user/${username}/review`}>Review</Button>
+            <Button variant="contained" className='create-button' component = {Link} to={`/user/${username}/dashboard`}>Dashboard</Button>
+        </div>))}
     </div>
   );
 };

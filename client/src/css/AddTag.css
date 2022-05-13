@@ -1,0 +1,11 @@
+.input{
+    text-align: left;
+}
+
+.input .create-button{
+    border-radius: 96px;
+    color: white;
+    background-color: #F48024;
+    /* padding-left: 30px; */
+    margin-left: 30px;
+}
