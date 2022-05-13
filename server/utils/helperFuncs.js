@@ -24,38 +24,34 @@ const paginateResults = (page, limit, docCount) => {
   };
 };
 
-const upvoteIt = async (quesAns, user) => {
+const upvoteIt = (quesAns, user) => {
   if (quesAns.upvotedBy.includes(user._id.toString())) {
     quesAns.upvotedBy = quesAns.upvotedBy.filter(
       (u) => u.toString() !== user._id.toString()
     );
-    user.upvotesGiven = user.upvotesGiven - 1;
   } else {
     quesAns.upvotedBy.push(user._id);
     quesAns.downvotedBy = quesAns.downvotedBy.filter(
       (d) => d.toString() !== user._id.toString()
     );
-    user.upvotesGiven = user.upvotesGiven + 1;
   }
-  await user.save();
+
   quesAns.points = quesAns.upvotedBy.length - quesAns.downvotedBy.length;
   return quesAns;
 };
 
-const downvoteIt = async (quesAns, user) => {
+const downvoteIt = (quesAns, user) => {
   if (quesAns.downvotedBy.includes(user._id.toString())) {
     quesAns.downvotedBy = quesAns.downvotedBy.filter(
       (d) => d.toString() !== user._id.toString()
     );
-    user.downvotesGiven = user.downvotesGiven - 1;
   } else {
     quesAns.downvotedBy.push(user._id);
     quesAns.upvotedBy = quesAns.upvotedBy.filter(
       (u) => u.toString() !== user._id.toString()
     );
-    user.downvotesGiven = user.downvotesGiven + 1;
   }
-  await user.save();
+
   quesAns.points = quesAns.upvotedBy.length - quesAns.downvotedBy.length;
   return quesAns;
 };

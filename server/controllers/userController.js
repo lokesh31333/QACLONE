@@ -5,7 +5,6 @@ const User = require("../models/user");
 const getUser = async (req, res) => {
   try {
     const { username } = req.params;
-    console.log("Username===", username)
 
     if (username.trim() === "") {
       throw new Error("Username must be provided.");
@@ -19,7 +18,6 @@ const getUser = async (req, res) => {
       throw new Error(`User '${username}' does not exist.`);
     }
 
-    // TODO: change total no of questions here
     const recentQuestions = await Question.find({ author: user._id })
       .sort({ createdAt: -1 })
       .select("id title points createdAt")
@@ -50,7 +48,6 @@ const getUser = async (req, res) => {
         },
       },
     ]);
-
     const userReputationScore =
       getReputationScore && getReputationScore.length > 0
         ? getReputationScore[0].totalScore
@@ -63,8 +60,6 @@ const getUser = async (req, res) => {
     } else if (userReputationScore > 0) {
       badge = "Bronze";
     }
-
-    console.log("Data user====", user);
     return res.status(200).json({
       id: user._id,
       username: user.username,
@@ -79,7 +74,6 @@ const getUser = async (req, res) => {
       totalAnswers,
       userReputationScore,
       badge,
-      badges: user.badges
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -87,7 +81,7 @@ const getUser = async (req, res) => {
 };
 
 const insertbookmark = async (req, res) => {
-
+  
   // console.log(req.body)
   const {ques} = req.body;
   const {authorization} = req.headers;
@@ -95,7 +89,7 @@ const insertbookmark = async (req, res) => {
   const {quesId} = ques;
   // console.log(quesId)
   // console.log(loggedUser)
-
+  
   try {
     const user = await User.findById(loggedUser);
     // console.log(loggedUser.id)

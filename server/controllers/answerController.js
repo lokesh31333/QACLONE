@@ -32,20 +32,6 @@ const postAnswer = async (req, res) => {
     author.answers.push({
       ansId: savedQues.answers[savedQues.answers.length - 1]._id,
     });
-
-    const totalAnswers = author.totalAnswers + 1;
-
-    console.log("Queastion numbers===", totalAnswers, res.body)
-    if (totalAnswers > 2 && totalAnswers < 5) {
-      author.badges.filter(b => b.name === 'Helpfulness').map(c => c.level = "Silver")
-      console.log("Author updated silver", author)
-    } else if (totalAnswers >= 5) {
-      author.badges.filter(b => b.name === 'Helpfulness').map(c => c.level = "Gold")
-      console.log("Author updated gold", author)
-    }
-
-    await author.update({$inc: {totalAnswers: 1}})
-
     await author.save();
 
     return res.status(200).json(populatedQues.answers);
