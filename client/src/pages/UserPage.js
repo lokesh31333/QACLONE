@@ -23,7 +23,7 @@ const UserPage = () => {
   const loggedUser = localStorage.loadUser();
   console.log(loggedUser)
   var flag = false; //To handle if user is admin
-  if (loggedUser.role == 'admin') {
+  if (loggedUser && loggedUser.role === 'admin') {
     flag = true;
     console.log(`Logged in user is Admin`, flag);
   }
