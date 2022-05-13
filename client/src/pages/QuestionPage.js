@@ -153,7 +153,7 @@ const QuestionPage = () => {
             </Typography>
           )}
           <Typography variant="caption">
-            Viewed <strong>{views.length} times</strong>
+            Viewed <strong>{views} times</strong>
           </Typography>
         </div>
         <div>

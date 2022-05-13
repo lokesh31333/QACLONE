@@ -49,6 +49,14 @@ const DesktopNavMenu = () => {
             <PeopleIcon className={classes.menuIcon} />
             Users
           </MenuItem>
+          <MenuItem
+            selected={pathname.startsWith("/approve")}
+            component={RouterLink}
+            to="/approve"
+          >
+            <AssignmentTurnedInIcon className={classes.menuIcon} />
+            Pending Questions
+          </MenuItem>
         </div>
         <Divider orientation="vertical" flexItem />
       </div>

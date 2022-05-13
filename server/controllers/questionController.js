@@ -16,23 +16,6 @@ const {
 } = require("./redisController");
 const ReputationScore = require("../models/reputationScore");
 
-
-const getQuesByViews = async(req,res) =>{
-  try{
-    const result =  await Question.find().sort({views:-1}).limit(10);
-    res.status(200).json(result);
-    return;
-  }
-  catch (err) {
-    console.error(err);
-    if (err.original) {
-      res.status(500).json({ status: 500, message: err.original.sqlMessage });
-    } else {
-      res.status(500).json(errors.serverError);
-    }
-  }
-}
-
 const getQuestions = async (req, res) => {
   let { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
 
@@ -191,12 +174,8 @@ const viewQuestion = async (req, res) => {
         `Question with ID: ${quesId} does not exist or pending approval.`
       );
     }
-    // var view_count=(question.views.length)++;
-    // var date=Date.now
-    // var views={view_count,date}
-    console.log(`checking for views`,question.views.length)
-    
-    question.views.push(Date.now());
+
+    question.views++;
     const savedQues = await question.save();
     await updateQuestionViews(question, question.views);
     const populatedQues = await savedQues
@@ -398,5 +377,4 @@ module.exports = {
   checkIfNeedAdminApproval,
   getPendingQuestions,
   approveQuestion,
-  getQuesByViews
 };

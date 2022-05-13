@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const commentSchema = require("./comment").schema;
 const answerSchema = require("./answer").schema;
-const viewSchema = require("./view").schema;
-
 const schemaCleaner = require("../utils/schemaCleaner");
 
 const questionSchema = new mongoose.Schema({
@@ -42,7 +40,7 @@ const questionSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  views:[{type: Date, default: Date.now}],
+  views: { type: Number, default: 0 },
   hotAlgo: { type: Number, default: Date.now },
   acceptedAnswer: {
     type: mongoose.Schema.Types.ObjectId,
