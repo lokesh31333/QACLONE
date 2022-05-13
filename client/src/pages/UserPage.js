@@ -14,6 +14,7 @@ import localStorage from "../utils/localStorage";
 
 
 import '../css/Admin.css'
+import Badges from '../components/Badges';
 const UserPage = () => {
   const classes = useUserPageStyles();
   const { notify } = useStateContext();
