@@ -9,9 +9,9 @@ import { BASE_URL, formatDateAgo } from "../utils/helperFuncs";
 import { Avatar, Typography, Divider } from "@material-ui/core";
 import { useUserPageStyles } from "../styles/muiStyles";
 import Button from '@mui/material/Button';
-import { Link ,Outlet} from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import localStorage from "../utils/localStorage";
-
+import UserBadges from '../components/UserBadges';
 
 import '../css/Admin.css'
 const UserPage = () => {
@@ -22,10 +22,10 @@ const UserPage = () => {
   const [fetchedUser, setFetchedUser] = useState(null);
   const loggedUser = localStorage.loadUser();
   console.log(loggedUser)
-  var flag=false; //To handle if user is admin
-  if(loggedUser.role=='admin'){
-    flag=true;
-    console.log(`Logged in user is Admin`,flag);
+  var flag = false; //To handle if user is admin
+  if (loggedUser.role == 'admin') {
+    flag = true;
+    console.log(`Logged in user is Admin`, flag);
   }
   useEffect(() => {
     const fetchUser = async () => {
@@ -35,7 +35,7 @@ const UserPage = () => {
         const { data } = getUser;
         setIsLoading(false);
         setFetchedUser(data);
-        
+
 
       } catch (error) {
         console.log(error);
@@ -68,6 +68,7 @@ const UserPage = () => {
     totalAnswers,
     recentQuestions,
     recentAnswers,
+    badges
   } = fetchedUser;
 
   const badgeMap = {
@@ -192,14 +193,17 @@ const UserPage = () => {
               </Typography>
             )}
           </div>
+          <div className='user__badges'>
+            <UserBadges badges={badges} />
+          </div>
         </div>
       </div>
-      
-     {(flag && (<div className='admin'>
-            <Button  variant="contained" className='create-button'  component = {Link} to={`/user/${username}/addtag`}>Add Tags</Button>
-            <Button variant="contained" className='create-button'  component = {Link} to={`/user/${username}/review`}>Review</Button>
-            <Button variant="contained" className='create-button' component = {Link} to={`/user/${username}/dashboard`}>Dashboard</Button>
-        </div>))}
+
+      {(flag && (<div className='admin'>
+        <Button variant="contained" className='create-button' component={Link} to={`/user/${username}/addtag`}>Add Tags</Button>
+        <Button variant="contained" className='create-button' component={Link} to={`/user/${username}/review`}>Review</Button>
+        <Button variant="contained" className='create-button' component={Link} to={`/user/${username}/dashboard`}>Dashboard</Button>
+      </div>))}
     </div>
   );
 };
