@@ -9,6 +9,7 @@ const {
   checkIfNeedAdminApproval,
   getPendingQuestions,
   approveQuestion,
+  getQuesByViews,
 } = require("../controllers/questionController");
 const { getQuestionsFromCache } = require("../controllers/redisController");
 const { authChecker, adminChecker } = require("../utils/authChecker");
@@ -24,6 +25,7 @@ questionRouter.put("/update", authChecker, editQuestion);
 questionRouter.put("/vote", authChecker, voteQuestion);
 questionRouter.get("/", getQuestionsFromCache, getQuestions);
 questionRouter.get("/get", viewQuestion);
+questionRouter.get("/getbyviews", getQuesByViews);
 questionRouter.get("/get-pending-questions", getPendingQuestions);
 questionRouter.put("/approve", authChecker, adminChecker, approveQuestion);
 questionRouter.delete("/:quesId", authChecker, deleteQuestion);
