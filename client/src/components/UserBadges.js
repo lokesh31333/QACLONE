@@ -13,7 +13,10 @@ const UserBadges = ({ badges }) => {
             {
                 badges !== undefined ? badges.filter(badge => badge.count !== 0).map((badge) => (
                     <button className="badges_button"
-                        style={badge.badgeValue === "Gold" ? { backgroundColor: '#FFD700' } : badge.badgeValue === "Silver" ? { backgroundColor: 'BCBBBB' } : { backgroundColor: "#CD7F32" }}
+                        style={badge.badgeValue === "Gold" ?
+                            (badge.type === "tag" ? { backgroundColor: '#FFD700', color: "#000000" } : { backgroundColor: '#FFD700' }) :
+                            badge.badgeValue === "Silver" ? (badge.type === "tag" ? { backgroundColor: 'BCBBBB', color: "#000000" } : { backgroundColor: 'BCBBBB' }) :
+                                (badge.type === "tag" ? { backgroundColor: '#CD7F32', color: "#000000" } : { backgroundColor: '#CD7F32' })}
                         key={badge.badgeName}> {badge.badgeName} </button>
                 )) : "no badges"
             }
