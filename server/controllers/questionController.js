@@ -17,16 +17,7 @@ const {
 const ReputationScore = require("../models/reputationScore");
 
 const getQuestions = async (req, res) => {
-  let { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
-
-  if (filterBySearch && !filterByTag) {
-    const first = filterBySearch.indexOf("[");
-    const second = filterBySearch.indexOf("]");
-    filterByTag = filterBySearch.substring(first + 1, second);
-    filterBySearch = filterBySearch.substring(second + 1)
-
-  }
-  console.log("query in get Q", req.query, filterBySearch, filterByTag);
+  const { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
 
   let sortQuery;
   switch (sortBy) {
