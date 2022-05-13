@@ -18,6 +18,7 @@ import DetailedChat from '../components/DetailedChat';
 import AddTag from "./AddTag";
 import QuesReviewPage from "./QuesReviewPage";
 import Analytics from "./Analytics";
+import TopQuesByViews from "../components/TopQuesByViews";
 
 const Routes = () => {
   const { user } = useAuthContext();
@@ -57,29 +58,66 @@ const Routes = () => {
           </Route>
 
           <Route exact path="/user/:username/addtag">
+                  {user ?(
+                  <>
                   <NavMenuDesktop />
                     <UserPage />
                     <div>
                     <AddTag/>
                     </div>
+                    </>
+                    ): (
+              <Redirect to="/" />
+            )}
                 </Route>
 
           <Route exact path="/user/:username/review">
-            <NavMenuDesktop />
-            Question Review Page
+          {user ?(
+                  <>
+                  <NavMenuDesktop />
               <div>
               <QuesReviewPage/>
               </div>
+                    </>
+                    ): (
+              <Redirect to="/" />
+            )}
           </Route>
 
           <Route exact path="/user/:username/dashboard">
             <NavMenuDesktop />
-            Analytics Dashboard Page
-              <div>
+            {user ?(
+                  <>
               <Analytics/>
-              </div>
+              </>
+                    ): (
+              <Redirect to="/" />
+            )}
           </Route>
-          
+
+          <Route exact path="/dashboard/questions/mostviewed">
+            <NavMenuDesktop />
+            {user ?(
+                  <> <div>
+              <TopQuesByViews/>
+              </div>
+              </>
+                    ): (
+              <Redirect to="/" />
+            )}
+          </Route> 
+
+          <Route exact path="/mostviewedtags">
+            {/* {user ? (
+              <>
+                <NavMenuDesktop />
+              </>
+            ) : (
+              <Redirect to="/" />
+            )} */}
+            <NavMenuDesktop />
+            hello
+          </Route>
 
           <Route exact path="/questions/:quesId">
             <NavMenuDesktop />

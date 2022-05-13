@@ -15,7 +15,23 @@ const {
   updateQuestionFromCache,
 } = require("./redisController");
 const ReputationScore = require("../models/reputationScore");
+const errors = require("../utils/errors");
 
+const getQuesByViews = async(req,res) =>{
+  try{
+    const result =  await Question.find().sort({views:-1}).limit(10);
+    res.status(200).json(result);
+    return;
+  }
+  catch (err) {
+    console.error(err);
+    if (err.original) {
+      res.status(500).json({ status: 500, message: err.original.sqlMessage });
+    } else {
+      res.status(500).json(errors.serverError);
+    }
+  }
+}
 const getQuestions = async (req, res) => {
   const { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
 
@@ -368,4 +384,5 @@ module.exports = {
   checkIfNeedAdminApproval,
   getPendingQuestions,
   approveQuestion,
+  getQuesByViews
 };
