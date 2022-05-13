@@ -54,7 +54,7 @@ const Routes = () => {
           <Route exact path="/user/:username">
             <NavMenuDesktop />
             <UserPage />
-                
+            <RightSidePanel />
           </Route>
 
           <Route exact path="/user/:username/addtag">
@@ -133,12 +133,13 @@ const Routes = () => {
             <RightSidePanel />
           </Route>
           <Route exact path="/search/:query">
-            <NavMenuDesktop/>
-            <QuesListPage searchFilterActive={true}/>
-            <RightSidePanel/>
+            <NavMenuDesktop />
+            <QuesListPage searchFilterActive={true} />
+            <RightSidePanel />
           </Route>
           <Route exact path="/messages" >
-            <Chats/>
+            <NavMenuDesktop />
+            <Chats />
           </Route>
           <Route>
             <NavMenuDesktop />
