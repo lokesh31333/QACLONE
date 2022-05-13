@@ -10,6 +10,9 @@ import { Avatar, Typography, Divider } from "@material-ui/core";
 import { useUserPageStyles } from "../styles/muiStyles";
 import Button from '@mui/material/Button';
 import { Link ,Outlet} from 'react-router-dom'
+import localStorage from "../utils/localStorage";
+
+
 import '../css/Admin.css'
 const UserPage = () => {
   const classes = useUserPageStyles();
@@ -17,7 +20,13 @@ const UserPage = () => {
   const { username } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [fetchedUser, setFetchedUser] = useState(null);
+  const loggedUser = localStorage.loadUser();
+  console.log(loggedUser)
   var flag=false; //To handle if user is admin
+  if(loggedUser.role=='admin'){
+    flag=true;
+    console.log(`Logged in user is Admin`,flag);
+  }
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -26,11 +35,7 @@ const UserPage = () => {
         const { data } = getUser;
         setIsLoading(false);
         setFetchedUser(data);
-        console.log(data.role);
-        if(data.role=='admin'){
-          flag=true;
-          console.log(`Logged in user is Admin`,flag);
-        }
+        
 
       } catch (error) {
         console.log(error);
@@ -71,10 +76,10 @@ const UserPage = () => {
     Bronze: "/static/bronze-badge.png",
   };
 
-  if(fetchedUser.role=='admin'){
-    flag=true;
-    console.log(`Logged in user is Admin`,flag);
-  }
+  // if(fetchedUser.role=='admin'){
+  //   flag=true;
+  //   console.log(`Logged in user is Admin`,flag);
+  // }
 
   return (
     <div className={classes.root}>
