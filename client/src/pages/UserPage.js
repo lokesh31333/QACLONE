@@ -11,6 +11,7 @@ import { useUserPageStyles } from "../styles/muiStyles";
 import Button from '@mui/material/Button';
 import { Link ,Outlet} from 'react-router-dom'
 import '../css/Admin.css'
+import Badges from '../components/Badges';
 const UserPage = () => {
   const classes = useUserPageStyles();
   const { notify } = useStateContext();
@@ -27,7 +28,9 @@ const UserPage = () => {
         setIsLoading(false);
         setFetchedUser(data);
         console.log(data.role);
-        if(data.role=='admin'){
+        console.log("With badges===", data);
+
+        if(data.role==='admin'){
           flag=true;
           console.log(`Logged in user is Admin`,flag);
         }
@@ -71,7 +74,7 @@ const UserPage = () => {
     Bronze: "/static/bronze-badge.png",
   };
 
-  if(fetchedUser.role=='admin'){
+  if(fetchedUser.role==='admin'){
     flag=true;
     console.log(`Logged in user is Admin`,flag);
   }
@@ -188,8 +191,11 @@ const UserPage = () => {
             )}
           </div>
         </div>
+        <div>
+          <Badges badges={fetchedUser.badges}/>
+        </div>
       </div>
-      
+
      {(flag && (<div className='admin'>
             <Button  variant="contained" className='create-button'  component = {Link} to={`/user/${username}/addtag`}>Add Tags</Button>
             <Button variant="contained" className='create-button'  component = {Link} to={`/user/${username}/review`}>Review</Button>
