@@ -17,7 +17,16 @@ const {
 const ReputationScore = require("../models/reputationScore");
 
 const getQuestions = async (req, res) => {
-  const { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
+  let { sortBy, filterByTag, filterBySearch, page, limit } = req.query;
+
+  if (filterBySearch && !filterByTag) {
+    const first = filterBySearch.indexOf("[");
+    const second = filterBySearch.indexOf("]");
+    filterByTag = filterBySearch.substring(first + 1, second);
+    filterBySearch = filterBySearch.substring(second + 1)
+
+  }
+  console.log("query in get Q", req.query, filterBySearch, filterByTag);
 
   let sortQuery;
   switch (sortBy) {
@@ -38,7 +47,31 @@ const getQuestions = async (req, res) => {
   }
 
   let findQuery = { pendingApproval: false };
-  if (filterByTag) {
+  if (filterByTag && filterBySearch) {
+    findQuery = {
+      ...findQuery, $and: [{
+        tags: { $all: [filterByTag] }
+      },
+      {
+        $or: [
+          {
+            title: {
+              $regex: filterBySearch,
+              $options: "i",
+            },
+          },
+          {
+            body: {
+              $regex: filterBySearch,
+              $options: "i",
+            },
+          },
+        ]
+      }]
+    };
+    console.log("findquery", findQuery)
+  }
+  else if (filterByTag) {
     findQuery = { ...findQuery, tags: { $all: [filterByTag] } };
   } else if (filterBySearch) {
     findQuery = {
@@ -106,7 +139,6 @@ const getPendingQuestions = async (req, res) => {
       questions,
       next: paginated.results.next,
     };
-
     return res.status(200).json(paginatedQues);
   } catch (err) {
     res.status(500).json(err.message);

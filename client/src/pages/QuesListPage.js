@@ -4,6 +4,7 @@ import { useParams, Link as RouterLink } from "react-router-dom";
 import { useStateContext } from "../context/state";
 import { useAuthContext } from "../context/auth";
 import SortQuesBar from "../components/SortQuesBar";
+import SortSearchBar from "../components/SortSearchBar";
 import QuesCard from "../components/QuesCard";
 import AuthFormModal from "../components/AuthFormModal";
 import LoadMoreButton from "../components/LoadMoreButton";
@@ -84,11 +85,15 @@ const QuesListPage = ({ tagFilterActive, searchFilterActive }) => {
           color="secondary"
           style={{ wordWrap: "anywhere" }}
         >
-          {tagFilterActive
-            ? `Questions tagged [${tagName}]`
-            : searchFilterActive
-            ? `Search results for "${query}"`
-            : "All Questions"}
+          {/* todo searc result*/}
+          {tagFilterActive && searchFilterActive ? (`Search results for "${query}"
+          tagged with  [${tagName}]`) :
+            (tagFilterActive
+              ? `Questions tagged [${tagName}]`
+              : searchFilterActive
+                ? `Search results for "${query}"`
+                : "All Questions")
+          }
         </Typography>
         {user ? (
           <Button
@@ -106,7 +111,12 @@ const QuesListPage = ({ tagFilterActive, searchFilterActive }) => {
           <AuthFormModal buttonType="ask" />
         )}
       </div>
-      <SortQuesBar isMobile={isMobile} sortBy={sortBy} setSortBy={setSortBy} />
+      {(tagFilterActive
+        ? <SortQuesBar isMobile={isMobile} sortBy={sortBy} setSortBy={setSortBy} />
+        : searchFilterActive
+          ? <SortSearchBar isMobile={isMobile} sortBy={sortBy} setSortBy={setSortBy} />
+          : <SortQuesBar isMobile={isMobile} sortBy={sortBy} setSortBy={setSortBy} />)}
+      {/* <SortQuesBar isMobile={isMobile} sortBy={sortBy} setSortBy={setSortBy} /> */}
       <Divider />
       {isLoading && page === 1 && (
         <div style={{ minWidth: "100%", marginTop: "1em" }}>
@@ -125,8 +135,8 @@ const QuesListPage = ({ tagFilterActive, searchFilterActive }) => {
             {tagFilterActive
               ? `There are no questions tagged "${tagName}".`
               : searchFilterActive
-              ? `No matches found for your search "${query}".`
-              : "No questions found."}
+                ? `No matches found for your search "${query}".`
+                : "No questions found."}
           </Typography>
         ))}
       {quesData && quesData.next && (

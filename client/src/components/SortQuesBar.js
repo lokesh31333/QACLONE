@@ -26,7 +26,7 @@ const SortQuesBar = ({ isMobile, sortBy, setSortBy }) => {
           variant={sortBy === 'VOTES' ? 'contained' : 'outlined'}
           onClick={handleSortChange}
         >
-          Votes
+          Score
         </Button>
         <Button
           variant={sortBy === 'VIEWS' ? 'contained' : 'outlined'}
