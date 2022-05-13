@@ -7,6 +7,7 @@ import ErrorMessage from "../components/ErrorMessage";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BASE_URL } from "../utils/helperFuncs";
+import { RichTextEditor } from "@mantine/rte";
 import {
   Typography,
   TextField,
@@ -24,8 +25,13 @@ const validationSchema = yup.object({
     .string()
     .required("Required")
     .min(15, "Must be at least 15 characters"),
+  // body: yup
+  //   .string()
+  //   .required("Required")
+  //   .min(30, "Must be at least 30 characters"),
 });
 
+// const initialValue = "";
 const AskQuestionPage = () => {
   const classes = useAskQuesPageStyles();
   const history = useHistory();
@@ -33,6 +39,7 @@ const AskQuestionPage = () => {
   const [bodyContent, setBodyContent] = useState();
   const { editValues, notify } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
+  // const [value, onChange] = useState(initialValue);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(editValues ? editValues.tags : []);
   const [errorMsg, setErrorMsg] = useState(null);

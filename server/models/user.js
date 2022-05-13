@@ -27,6 +27,8 @@ const userSchema = new mongoose.Schema({
       rep: { type: Number, default: 0 },
     },
   ],
+  bookmarks: [ String
+  ],
   answers: [
     {
       ansId: { type: mongoose.Schema.Types.ObjectId, ref: "Answer" },

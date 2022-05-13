@@ -8,6 +8,7 @@ const { db } = require("../models/index");
 const registerController = async (req, res) => {
   try {
     const UserSql = db.users;
+    console.log(req.body);
     const { username, email, password } = req.body;
     const { errors, valid } = registerValidator(username, password);
 

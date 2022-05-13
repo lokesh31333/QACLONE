@@ -28,7 +28,7 @@ const RightSidePanel = () => {
       console.log(error);
       setIsLoading(false);
       if (error && error.response) {
-        notify(error.response.data.message, "error");
+        // notify(error.response.data.message, "error");
       }
     }
   };

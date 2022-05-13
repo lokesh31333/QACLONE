@@ -2,6 +2,7 @@ import { useState } from 'react';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import { ReactComponent as UpvoteIcon } from '../svg/upvote.svg';
+import { ReactComponent as BookmarkIcon } from '../svg/bookmark.svg';
 import { ReactComponent as DownvoteIcon } from '../svg/downvote.svg';
 
 import { DialogTitle } from './CustomDialogTitle';
@@ -71,6 +72,14 @@ const AuthFormModal = ({ closeMenu, buttonType }) => {
         <IconButton onClick={handleLoginModal}>
           <SvgIcon className={classes.upDownIcon}>
             <UpvoteIcon />
+          </SvgIcon>
+        </IconButton>
+      );
+    } else if (buttonType === 'bookmark') {
+      return (
+        <IconButton onClick={handleLoginModal}>
+          <SvgIcon className={classes.upDownIcon}>
+            <BookmarkIcon />
           </SvgIcon>
         </IconButton>
       );

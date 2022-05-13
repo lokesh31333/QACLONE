@@ -11,10 +11,14 @@ import { Typography, Button, TextField, Chip, Link } from "@material-ui/core";
 import { useQuesPageStyles } from "../styles/muiStyles";
 import localStorage from "../utils/localStorage";
 import { useState } from "react";
+import { RichTextEditor } from '@mantine/rte';
+// import { RichTextEditor } from '@mantine/rte';
 
 const validationSchema = yup.object({
   answerBody: yup.string().min(30, "Must be at least 30 characters"),
 });
+const initialValue = '';
+// const initialValue = '';
 
 const AnswerForm = ({ quesId, tags, handleUpdateAnswers }) => {
   const classes = useQuesPageStyles();
@@ -25,14 +29,15 @@ const AnswerForm = ({ quesId, tags, handleUpdateAnswers }) => {
     mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
-
+  const [value, onChange] = useState(initialValue);
   const addAnswer = async (body) => {
     try {
       setIsLoading(true);
       const loggedUser = localStorage.loadUser();
+      console.log(value);
       const newAnswers = await axios.post(
         `${BASE_URL}/answers/new`,
-        { quesId, body },
+        { quesId, value },
         {
           headers: {
             authorization: loggedUser?.token,
@@ -64,7 +69,7 @@ const AnswerForm = ({ quesId, tags, handleUpdateAnswers }) => {
       )}
       {user && (
         <form onSubmit={handleSubmit(postAnswer)}>
-          <TextField
+          {/* <TextField
             inputRef={register}
             name="answerBody"
             required
@@ -77,7 +82,14 @@ const AnswerForm = ({ quesId, tags, handleUpdateAnswers }) => {
             helperText={"answerBody" in errors ? errors.answerBody.message : ""}
             multiline
             rows={5}
-          />
+          /> */}
+          <RichTextEditor
+          name="answerBody"
+          required
+          type="text"
+          placeholder="Enter atleast 30 characters"
+          error={"answerBody" in errors}
+          value={value} onChange={onChange} />
           <div>
             <Button
               color="primary"
