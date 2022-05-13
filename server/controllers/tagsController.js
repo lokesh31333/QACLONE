@@ -1,6 +1,6 @@
 const Question = require("../models/question");
 const Tag = require("../models/tag");
-const errors = require("../../../../final/Etsy-Clone/backend/util/errors");
+const errors = require("../utils/errors");
 
 
 const getAllTags = async (req, res) => {
